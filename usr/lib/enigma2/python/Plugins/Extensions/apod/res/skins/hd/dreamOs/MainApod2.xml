@@ -1,0 +1,5 @@
+<!-- Skin plgstr 16/08/2020 -->
+<screen name="plgnstrt" position="center,center" size="1280,720" title="..::apod::.." backgroundColor="#ff000000" flags="wfNoBorder">
+	<widget name="poster" position="61,48" size="576,585" alphatest="blend" scale="stretch" zPosition="0" />
+	<widget source="text" render="tvsRunningText" position="650,50" size="561,577" font="Regular;20" foregroundColor="#ffb75b" backgroundColor="#101010" halign="center" transparent="1" zPosition="2" options="movetype=running,startpoint=0,direction=top,steptime=80,repeat=0,always=0,oneshot=0,startdelay=6000,wrap" />
+</screen>

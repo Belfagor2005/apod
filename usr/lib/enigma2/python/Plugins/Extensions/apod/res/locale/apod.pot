@@ -1,0 +1,70 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Apod\n"
+"Report-Msgid-Bugs-To: Lululla <ekekaz@gmail.com>\n"
+"POT-Creation-Date: 2024-08-30 12:55+0200\n"
+"PO-Revision-Date: 2024-08-30 12:55+0200\n"
+"Last-Translator: Lululla <ekekaz@gmail.com>\n"
+"Language-Team: lululla\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.4.4\n"
+"X-Poedit-Basepath: ../../../..\n"
+"X-Poedit-SourceCharset: iso-8859-1\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: Extensions/apod/plugin.py:172
+msgid "Back"
+msgstr ""
+
+#: Extensions/apod/plugin.py:174
+msgid "Search"
+msgstr ""
+
+#: Extensions/apod/plugin.py:203
+#, python-format
+msgid ""
+"Apod Plugin v.%s\n"
+"\n"
+"\n"
+"Thanks:\n"
+"@oktus\n"
+"Corvoboys - Forum\n"
+"\n"
+"If you like the plugin you can offer a coffee:\n"
+"\n"
+"https://ko-fi.com/lululla"
+msgstr ""
+
+#: Extensions/apod/plugin.py:204
+msgid "Info Apod"
+msgstr ""
+
+#: Extensions/apod/plugin.py:210
+msgid "Filter this category..."
+msgstr ""
+
+#: Extensions/apod/plugin.py:232
+msgid "No Image Map found in search!!!"
+msgstr ""
+
+#: Extensions/apod/plugin.py:254 Extensions/apod/plugin.py:382
+msgid ""
+"Addons Download Failure\n"
+"No internet connection or server down !"
+msgstr ""
+
+#: Extensions/apod/plugin.py:468 Extensions/apod/plugin.py:586
+msgid "https://apod.nasa.gov"
+msgstr ""
+
+#: Extensions/apod/plugin.py:473 Extensions/apod/plugin.py:591
+msgid ""
+"\n"
+"\n"
+"Error downloading data!"
+msgstr ""
