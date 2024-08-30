@@ -5,7 +5,7 @@ from Components.Language import language
 from Tools.Directories import resolveFilename, SCOPE_PLUGINS
 import gettext
 import os
-
+import sys
 PluginLanguageDomain = 'apod'
 PluginLanguagePath = 'Extensions/apod/res/locale'
 plugin_path = '/usr/lib/enigma2/python/Plugins/Extensions/apod'
