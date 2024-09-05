@@ -40,7 +40,7 @@ import sys
 import re
 import codecs
 PY3 = sys.version_info.major >= 3
-print('Py3: ', PY3)
+# print('Py3: ', PY3)
 if PY3:
     from urllib.request import urlopen
     PY3 = True
@@ -122,15 +122,14 @@ class apList(MenuList):
 def apListEntry(name, png):
     res = [name]
     png = os.path.join(plugin_path, 'res/pics/star.png')
+
+    res.append(MultiContentEntryPixmapAlphaTest(pos=(5, 5), size=(50, 50), png=loadPNG(png)))
     if screenwidth.width() == 2560:
-        res.append(MultiContentEntryPixmapAlphaTest(pos=(5, 5), size=(50, 50), png=loadPNG(png)))
         res.append(MultiContentEntryText(pos=(110, 0), size=(950, 50), font=0, text=name, flags=RT_HALIGN_LEFT | RT_VALIGN_CENTER))
     elif screenwidth.width() == 1920:
-        res.append(MultiContentEntryPixmapAlphaTest(pos=(5, 5), size=(50, 50), png=loadPNG(png)))
         res.append(MultiContentEntryText(pos=(75, 0), size=(750, 50), font=0, text=name, flags=RT_HALIGN_LEFT | RT_VALIGN_CENTER))
     else:
-        res.append(MultiContentEntryPixmapAlphaTest(pos=(3, 3), size=(50, 50), png=loadPNG(png)))
-        res.append(MultiContentEntryText(pos=(65, 0), size=(465, 30), font=0, text=name, flags=RT_HALIGN_LEFT | RT_VALIGN_CENTER))
+        res.append(MultiContentEntryText(pos=(70, 0), size=(465, 30), font=0, text=name, flags=RT_HALIGN_LEFT | RT_VALIGN_CENTER))
     return res
 
 

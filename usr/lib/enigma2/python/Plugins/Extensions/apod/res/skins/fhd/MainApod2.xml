@@ -1,4 +1,4 @@
 <screen name="plgnstrt" position="0,0" size="1920,1080" title="..::apod Project::.." backgroundColor="#ff000000" flags="wfNoBorder">
-	<widget source="text" render="tvsRunningText" position="26,774" size="1837,291" halign="left" font="Regular; 34" transparent="1" backgroundColor="background" valign="top" zPosition="1" foregroundColor="yellow" options="movetype=running,startpoint=0,direction=top,steptime=100,startdelay=4000,wrap,always=0" />
+	<widget source="text" render="tvsRunningText" position="26,684" size="1837,381" halign="left" font="Regular; 34" transparent="1" backgroundColor="#ff000000" valign="top" zPosition="1" foregroundColor="yellow" options="movetype=running,startpoint=0,direction=top,steptime=100,startdelay=6000,wrap,always=0" />
 	<widget name="poster" position="0,0" size="1920,1080" alphatest="blend" scale="stretch" zPosition="0" />	
 </screen>
