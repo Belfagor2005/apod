@@ -80,9 +80,9 @@ def ssl_urlopen(url):
         return urlopen(url)
 
 
-currversion = '1.0'
-title_plug = '..:: Image of The Day - Nasa %s ::..' % currversion
-name_plug = 'Image of The Day'
+currversion = '1.1'
+title_plug = '..:: Picture of The Day - Nasa %s ::..' % currversion
+name_plug = 'Picture of The Day'
 Credits = 'Info http://t.me/tivustream'
 Maintener = 'Maintener @Lululla'
 plugin_path = '/usr/lib/enigma2/python/Plugins/Extensions/apod'
@@ -350,7 +350,7 @@ class MainApod2(Screen):
         Screen.__init__(self, session)
         self["poster"] = Pixmap()
         self.url = url
-        self['text'] = StaticText()
+        self['text'] = Label()
         self['actions'] = ActionMap(['OkCancelActions',
                                      'DirectionActions',
                                      'ColorActions'], {'ok': self.clsgo,
@@ -486,7 +486,7 @@ class startApod(Screen):
         Screen.__init__(self, session)
         self["poster"] = Pixmap()
         self.url = url
-        self['text'] = StaticText()
+        self['text'] = Label()
         self['actions'] = ActionMap(['OkCancelActions',
                                      'DirectionActions',
                                      'ColorActions'], {'ok': self.clsgo,
