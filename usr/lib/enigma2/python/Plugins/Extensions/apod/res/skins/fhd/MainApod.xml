@@ -1,5 +1,5 @@
 <!-- Skin MainTvStream 15/08/2020 -->
-<screen name="MainTvStream" position="0,0" size="1920,1080" title="..::apod::.." backgroundColor="#ff000000" flags="wfNoBorder">
+<screen name="MainApod" position="0,0" size="1920,1080" title="..::apod::.." backgroundColor="#ff000000" flags="wfNoBorder">
 	<widget name="title" position="220,90" size="900,40" font="Regular;30" halign="left" valign="center" foregroundColor="#002a79b8" backgroundColor="black" transparent="1" zPosition="5" />
 	<widget name="Maintainer" position="517,41" size="400,42" font="Regular;24" halign="left" foregroundColor="yellow" backgroundColor="#000000" transparent="1" zPosition="5" />
 	<widget name="info" position="220,765" size="820,140" font="Regular; 38" halign="left" valign="center" foregroundColor="yellow" backgroundColor="#000000" transparent="1" zPosition="5"/>
@@ -19,4 +19,5 @@
 	<widget name="key_green" position="270,1000" size="300,40" font="Regular;30" halign="left" valign="center" backgroundColor="black" transparent="1" zPosition="5" />
 	<widget name="key_yellow" position="710,940" size="300,40" font="Regular;30" halign="right" valign="center" backgroundColor="black" zPosition="5" transparent="1" />
 	<widget name="key_blue" position="710,1000" size="300,40" font="Regular;30" halign="right" valign="center" backgroundColor="black" zPosition="5" transparent="1" />
+	<eLabel name="" position="991,35" size="52,52" backgroundColor="#10808080" halign="center" valign="center" transparent="0" cornerRadius="26" font="Regular; 17" zPosition="4" text="INFO" />
 </screen>

@@ -10,7 +10,7 @@
 Info http://t.me/tivustream
 '''
 from __future__ import print_function
-from . import _
+from . import _, checkGZIP
 
 from Components.ActionMap import ActionMap
 from Components.Button import Button
@@ -18,7 +18,6 @@ from Components.Label import Label
 from Components.MenuList import MenuList
 from Components.MultiContent import (MultiContentEntryText, MultiContentEntryPixmapAlphaTest)
 from Components.Pixmap import Pixmap
-from Components.Sources.StaticText import StaticText
 from Plugins.Plugin import PluginDescriptor
 from Screens.MessageBox import MessageBox
 from Screens.Screen import Screen
@@ -33,19 +32,20 @@ from enigma import (
     gFont,
 )
 from twisted.web.client import getPage
-# from datetime import datetime
 import os
 import ssl
 import sys
 import re
 import codecs
-PY3 = sys.version_info.major >= 3
-# print('Py3: ', PY3)
-if PY3:
+PY3 = False
+
+
+if sys.version_info[0] == 3:
     from urllib.request import urlopen
     PY3 = True
 else:
     from urllib2 import urlopen
+# print('Py3: ', PY3)
 
 
 if sys.version_info >= (2, 7, 9):
@@ -80,7 +80,7 @@ def ssl_urlopen(url):
         return urlopen(url)
 
 
-currversion = '1.1'
+currversion = '1.2'
 title_plug = '..:: Picture of The Day - Nasa %s ::..' % currversion
 name_plug = 'Picture of The Day'
 Credits = 'Info http://t.me/tivustream'
@@ -149,6 +149,8 @@ class MainApod(Screen):
         self.session = session
         global _session
         _session = session
+        global search_ok
+        search_ok = False
         skin = os.path.join(skin_path, 'MainApod.xml')
         with codecs.open(skin, "r", encoding="utf-8") as f:
             self.skin = f.read()
@@ -162,29 +164,28 @@ class MainApod(Screen):
         self['list'] = self.list
         self['list'] = apList([])
         self['info'] = Label()
-        global search_ok
-        search_ok = False
         # self["poster"] = Pixmap()
         self['key_red'] = Button(_('Back'))
         self['key_green'] = Button()
         self['key_yellow'] = Button(_('Search'))
-        self["key_blue"] = Button()
+        self["key_blue"] = Button(_('Info Image'))
         self['Maintainer'] = Label('%s' % Maintener)
         self.currentList = 'list'
-        self['actions'] = ActionMap(['DirectionActions',
+        self['actions'] = ActionMap(['EPGSelectActions',
                                      'OkCancelActions',
-                                     'EPGSelectActions',
-                                     'ButtonSetupActions',
+                                     'DirectionActions',
+                                     # 'ButtonSetupActions',
                                      'ColorActions'], {'ok': self.okRun,
+                                                       'cancel': self.backhome,
                                                        'red': self.backhome,
                                                        'yellow': self.search_apod,
+                                                       'blue': self.prev_blue,
                                                        'up': self.up,
                                                        'down': self.down,
                                                        'left': self.left,
                                                        'right': self.right,
                                                        'epg': self.info,
-                                                       'info': self.info,
-                                                       'cancel': self.backhome}, -2)
+                                                       'info': self.info}, -2)
 
         self.readJsonTimer = eTimer()
         try:
@@ -291,7 +292,7 @@ class MainApod(Screen):
             self.load_infos()
             # self['list'].moveToIndex(0)
         except Exception as e:
-            print("Error: can't find file or read data in live_to_stream", e)
+            print("Error: can't find file or read data", e)
         return
 
     def load_infos(self):
@@ -321,15 +322,44 @@ class MainApod(Screen):
         self[self.currentList].pageDown()
         self.load_infos()
 
+    def prev_blue(self):
+        i = len(self.data)
+        if i < 0:
+            return
+        idx = self['list'].getSelectionIndex()
+        url = self.urls[idx]
+        self.named = self.data[idx]
+        if PY3:
+            url = url.encode()
+        if os.path.exists('/var/lib/dpkg/info'):
+            print('have a dreamOs!!!')
+            self.data = checkGZIP(url)
+            self.key_blue(self.data)
+        else:
+            print('have a Atv-PLi - etc..!!!')
+            getPage(url).addCallback(self.key_blue).addErrback(self.errorLoad)
+
+    def key_blue(self, page):
+        self.url = ''
+        self.descx = None
+        data = page.decode('utf-8', errors='ignore')
+        regexnasa = r'alt="([^"]+)"'
+        matches = re.compile(regexnasa, re.DOTALL).findall(data)
+        for desc in matches:
+            # print('desc is:', str(desc))
+            self.descx = str(self.named) + '\n\n' + str(desc) + '\n\n' + 'Archive here https://apod.nasa.gov/apod'
+        if self.descx is not None:
+            aboutbox = self.session.open(MessageBox, self.descx, MessageBox.TYPE_INFO, timeout=10)
+        else:
+            aboutbox = self.session.open(MessageBox, "No Descriptions for this image\nOk or Exit for return to list", MessageBox.TYPE_INFO, timeout=10)
+        aboutbox.setTitle(_('Info Apod'))
+
     def okRun(self):
         i = len(self.data)
         if i < 0:
             return
         idx = self['list'].getSelectionIndex()
-        # data = self.data[idx]
         url = self.urls[idx]
-        # desc = self.desc[idx]
-        # print('data - name, url:', data + '\n' + desc + '\n' + url + '\n')
         self.session.open(MainApod2, url)
 
     def backhome(self):
@@ -342,12 +372,12 @@ class MainApod(Screen):
 class MainApod2(Screen):
     def __init__(self, session, url=None):
         self.session = session
+        Screen.__init__(self, session)
         global _session
         _session = session
         skin = os.path.join(skin_path, 'MainApod2.xml')
         with codecs.open(skin, "r", encoding="utf-8") as f:
             self.skin = f.read()
-        Screen.__init__(self, session)
         self["poster"] = Pixmap()
         self.url = url
         self['text'] = Label()
@@ -388,7 +418,7 @@ class MainApod2(Screen):
             of Saturn is visible just behind it on the left.
             Please see the explanation for more detailed information."
             '''
-            regexnasa = r'<IMG SRC="(image\/\d+\/[^"]+\.jpg)"\s+alt="([^"]+)"'
+            regexnasa = r'<IMG SRC="(image\/\d+\/[^"]+\.(?:jpg|png))"\s+alt="([^"]+)"'
             matches = re.compile(regexnasa, re.DOTALL).findall(data)
             for url, desc in matches:
                 self.url = 'https://apod.nasa.gov/apod/' + str(url)
@@ -397,7 +427,7 @@ class MainApod2(Screen):
             self.loadDefaultImage()
         except Exception as e:
             print(e)
-            print("Error: can't find file or read data in live_to_stream")
+            print("Error: can't find file or read data")
         return
 
     def loadDefaultImage(self, failure=None):
@@ -612,44 +642,6 @@ class startApod(Screen):
 
     def clsgo(self):
         self.session.openWithCallback(self.close, MainApod)
-
-
-def checkGZIP(url):
-    url = url
-    from io import StringIO
-    import gzip
-    import requests
-    import sys
-    if sys.version_info[0] == 3:
-        from urllib.request import (urlopen, Request)
-        # unicode = str
-        # PY3 = True
-    else:
-        from urllib2 import (urlopen, Request)
-    AgentRequest = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.3'
-    hdr = {"User-Agent": AgentRequest}
-    response = None
-    request = Request(url, headers=hdr)
-    try:
-        response = urlopen(request, timeout=10)
-        if response.info().get('Content-Encoding') == 'gzip':
-            buffer = StringIO(response.read())
-            deflatedContent = gzip.GzipFile(fileobj=buffer)
-            if sys.version_info[0] == 3:
-                return deflatedContent.read().decode('utf-8')
-            else:
-                return deflatedContent.read()
-        else:
-            if sys.version_info[0] == 3:
-                return response.read().decode('utf-8')
-            else:
-                return response.read()
-
-    except requests.exceptions.RequestException as e:
-        print("Request error:", e)
-    except Exception as e:
-        print("Unexpected error:", e)
-    return None
 
 
 def main(session, **kwargs):

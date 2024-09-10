@@ -1,4 +1,4 @@
-<screen name="plgnstrt" position="center,center" size="2560,1440" title="..::apod Project::.." backgroundColor="#ff000000" flags="wfNoBorder">
-	<widget name="poster" position="118,71" size="1267,1200" alphatest="blend" scale="stretch" zPosition="0"/>	
-	<widget name="text" position="1430,120" size="974,1124" font="Regular;36" halign="left" foregroundColor="yellow" backgroundColor="#000000" transparent="1" zPosition="5"/>
+<screen name="MainApod2" position="center,center" size="2560,1440" title="..::apod Project::.." backgroundColor="#ff000000" flags="wfNoBorder">
+	<widget name="poster" position="382,23" size="1920,1020" alphatest="blend" scale="stretch" zPosition="0" />	
+	<widget name="text" position="383,285" size="1920,759" font="Regular; 34" halign="left" foregroundColor="yellow" backgroundColor="#000000" transparent="1" zPosition="5" valign="bottom" />
 </screen>
