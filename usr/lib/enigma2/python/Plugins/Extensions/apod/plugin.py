@@ -11,7 +11,6 @@ Info http://t.me/tivustream
 '''
 from __future__ import print_function
 from . import _, checkGZIP
-
 from Components.ActionMap import ActionMap
 from Components.Button import Button
 from Components.Label import Label
@@ -37,6 +36,7 @@ import ssl
 import sys
 import re
 import codecs
+
 PY3 = False
 
 
@@ -80,7 +80,7 @@ def ssl_urlopen(url):
         return urlopen(url)
 
 
-currversion = '1.2'
+currversion = '1.3'
 title_plug = '..:: Picture of The Day - Nasa %s ::..' % currversion
 name_plug = 'Picture of The Day'
 Credits = 'Info http://t.me/tivustream'
@@ -437,19 +437,32 @@ class MainApod2(Screen):
             if failure:
                 print("*** failure *** %s" % failure)
 
+            # description image
+            continfo = str(self.desc) + '\n'
+            continfo += _('https://apod.nasa.gov') + '\n\n'
+            print('continfo=', continfo)
+            try:
+                self['text'].setText(continfo)
+            except:
+                self['text'].setText(_('\n\n' + 'Error downloading data!'))
+
             image_request = r.get(self.url)
             image_request.raise_for_status()  # Check for HTTP errors
-
+            '''
+            if image_request != 200:
+                self.url = "https://apod.nasa.gov/apod/image/2409/NightTatra_Rosadzinski_960.jpg"
+            '''
             # Get the image file extension from the URL
             image_extension = os.path.splitext(self.url)[1]
             image_path = '/tmp/image' + image_extension
             image_path2 = '/tmp/image'
             with open(image_path, 'wb') as img:
                 img.write(image_request.content)
+
             try:
                 import Image
             except:
-                from PIL import Image, ImageChops
+                from PIL import Image  # , ImageChops
             im = Image.open(image_path).convert("RGBA")
 
             size = [1280, 720]
@@ -471,7 +484,9 @@ class MainApod2(Screen):
                     im = im.resize((int(imagew * ratio), int(imageh * ratio)), Image.Resampling.LANCZOS)
                 except:
                     im = im.resize((int(imagew * ratio), int(imageh * ratio)), Image.ANTIALIAS)
-
+            tmpimg = image_path2 + '.png'
+            im.save(tmpimg)
+            '''
             imagew, imageh = im.size
             bg = Image.new("RGBA", size, (255, 255, 255, 0))
             im_alpha = im.convert("RGBA").split()[-1]
@@ -481,20 +496,10 @@ class MainApod2(Screen):
             temp.paste(im_alpha, (int((bgwidth - imagew) / 2), int((bgheight - imageh) / 2)), im_alpha)
             bg_alpha = ImageChops.screen(bg_alpha, temp)
             im.paste(im, (int((bgwidth - imagew) / 2), int((bgheight - imageh) / 2)))
-
-            # image_path =  '/tmp/image'
             im.save(image_path2 + ".png", "PNG")
             tmpimg = image_path2 + '.png'
+            '''
             self["poster"].instance.setPixmapFromFile(os.path.join('tmp', tmpimg))
-
-            # description image
-            continfo = str(self.desc) + '\n'
-            continfo += _('https://apod.nasa.gov') + '\n\n'
-            print('continfo=', continfo)
-            try:
-                self['text'].setText(continfo)
-            except:
-                self['text'].setText(_('\n\n' + 'Error downloading data!'))
 
         except r.exceptions.RequestException as e:
             print("An error occurred while fetching data: %s" % e)
@@ -503,6 +508,11 @@ class MainApod2(Screen):
 
     def clsgo(self):
         self.close()
+
+    def DecodePicture(self, PicInfo=None):
+        ptr = self.PicLoad.getData()
+        if ptr is not None:
+            self['poster'].instance.setPixmap(ptr)
 
 
 class startApod(Screen):
@@ -537,7 +547,6 @@ class startApod(Screen):
 
             response = r.get(self.url)
             response.raise_for_status()  # Check for HTTP errors
-
             data = response.json()
             '''
             # if PY3:
@@ -548,8 +557,19 @@ class startApod(Screen):
             self.date = data.get('date')
             self.titlex = data.get('title')
             image_url = data.get('url')
+            image_urlhd = data.get('hdurl')
             self.descr = data.get('explanation')
             self.copyr = data.get('copyright')
+
+            continfo = str(self.date) + '\n\n'
+            continfo += str(self.descr) + '\n'
+            continfo += str(self.copyr) + '\n'
+            continfo += _('https://apod.nasa.gov') + '\n\n'
+            # print('continfo=', continfo)
+            try:
+                self['text'].setText(continfo)
+            except:
+                self['text'].setText(_('\n\n' + 'Error downloading data!'))
 
             image_request = r.get(image_url)
             image_request.raise_for_status()  # Check for HTTP errors
@@ -563,7 +583,7 @@ class startApod(Screen):
             try:
                 import Image
             except:
-                from PIL import Image, ImageChops
+                from PIL import Image  # , ImageChops
             im = Image.open(image_path).convert("RGBA")
 
             size = [1280, 720]
@@ -587,8 +607,10 @@ class startApod(Screen):
                 except:
                     im = im.resize((int(imagew * ratio), int(imageh * ratio)), Image.ANTIALIAS)
 
+            tmpimg = image_path2 + '.png'
+            im.save(tmpimg)
+            '''
             imagew, imageh = im.size
-
             bg = Image.new("RGBA", size, (255, 255, 255, 0))
             im_alpha = im.convert("RGBA").split()[-1]
             bgwidth, bgheight = bg.size
@@ -597,24 +619,11 @@ class startApod(Screen):
             temp.paste(im_alpha, (int((bgwidth - imagew) / 2), int((bgheight - imageh) / 2)), im_alpha)
             bg_alpha = ImageChops.screen(bg_alpha, temp)
             im.paste(im, (int((bgwidth - imagew) / 2), int((bgheight - imageh) / 2)))
-
-            # image_path =  '/tmp/image'
             im.save(image_path2 + ".png", "PNG")
-
             tmpimg = image_path2 + '.png'
+            '''
             self["poster"].instance.setPixmapFromFile(os.path.join('tmp', tmpimg))
 
-            continfo = str(self.date) + '\n\n'
-            continfo += str(self.descr) + '\n'
-            continfo += str(self.copyr) + '\n'
-            continfo += _('https://apod.nasa.gov') + '\n\n'
-            # print('continfo=', continfo)
-            try:
-                self['text'].setText(continfo)
-            except:
-                self['text'].setText(_('\n\n' + 'Error downloading data!'))
-
-            # self.decodeImage(image_path)
         except r.exceptions.RequestException as e:
             print("An error occurred while fetching data: %s" % e)
         except Exception as e:
