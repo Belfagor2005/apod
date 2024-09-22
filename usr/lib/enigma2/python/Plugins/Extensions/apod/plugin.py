@@ -110,7 +110,7 @@ class apList(MenuList):
 
         elif screenwidth.width() == 1920:
             self.l.setItemHeight(50)
-            textfont = int(34)
+            textfont = int(32)
             self.l.setFont(0, gFont('Regular', textfont))
 
         else:
@@ -129,7 +129,7 @@ def apListEntry(name, png):
     elif screenwidth.width() == 1920:
         res.append(MultiContentEntryText(pos=(75, 0), size=(750, 50), font=0, text=name, flags=RT_HALIGN_LEFT | RT_VALIGN_CENTER))
     else:
-        res.append(MultiContentEntryText(pos=(70, 0), size=(465, 30), font=0, text=name, flags=RT_HALIGN_LEFT | RT_VALIGN_CENTER))
+        res.append(MultiContentEntryText(pos=(70, 0), size=(650, 50), font=0, text=name, flags=RT_HALIGN_LEFT | RT_VALIGN_CENTER))
     return res
 
 
