@@ -11,6 +11,7 @@ Info http://t.me/tivustream
 '''
 from __future__ import print_function
 from . import _, checkGZIP
+from Components.AVSwitch import AVSwitch
 from Components.ActionMap import ActionMap
 from Components.Button import Button
 from Components.Label import Label
@@ -29,6 +30,8 @@ from enigma import (
     loadPNG,
     getDesktop,
     gFont,
+    ePicLoad,
+    # gPixmapPtr,
 )
 from twisted.web.client import getPage
 import os
@@ -80,14 +83,16 @@ def ssl_urlopen(url):
         return urlopen(url)
 
 
-currversion = '1.3'
+global tmpimg, tmpImg
+
+currversion = '1.5'
 title_plug = '..:: Picture of The Day - Nasa %s ::..' % currversion
 name_plug = 'Picture of The Day'
 Credits = 'Info http://t.me/tivustream'
 Maintener = 'Maintener @Lululla'
 plugin_path = '/usr/lib/enigma2/python/Plugins/Extensions/apod'
-# ================
-
+tmpImg = os.path.join(plugin_path, 'res/pics/vialattea.png')
+tmpimg = os.path.join('/tmp', 'image.png')
 screenwidth = getDesktop(0).size()
 if screenwidth.width() == 2560:
     skin_path = plugin_path + '/res/skins/uhd/'
@@ -156,6 +161,9 @@ class MainApod(Screen):
             self.skin = f.read()
         self.setup_title = ('HOME')
         self.setTitle(title_plug)
+        self.PicLoad = ePicLoad()
+        global tmpimg
+        tmpimg = os.path.join('/tmp', 'image.png')
         self.list = []
         self.data = []
         self.urls = []
@@ -164,7 +172,8 @@ class MainApod(Screen):
         self['list'] = self.list
         self['list'] = apList([])
         self['info'] = Label()
-        # self["poster"] = Pixmap()
+        self["poster"] = Pixmap()
+        # self['poster'].hide()
         self['key_red'] = Button(_('Back'))
         self['key_green'] = Button()
         self['key_yellow'] = Button(_('Search'))
@@ -237,11 +246,9 @@ class MainApod(Screen):
         if PY3:
             url = url.encode()
         if os.path.exists('/var/lib/dpkg/info'):
-            print('have a dreamOs!!!')
             self.data = checkGZIP(url)
             self._gotPageLoad(self.data)
         else:
-            print('have a Atv-PLi - etc..!!!')
             getPage(url).addCallback(self._gotPageLoad).addErrback(self.errorLoad)
 
     def errorLoad(self, error):
@@ -257,37 +264,18 @@ class MainApod(Screen):
         items = []
         data = page.decode('utf-8', errors='ignore')
         try:
-            '''
-            if PY3:
-                data = data.decode("utf-8")
-            else:
-                data = data.encode("utf-8")
-            if data:
-            '''
-            # print('content: ', data)
             regexnasa = r'(\d{4} \w+ \d{2}):\s*<a href="(ap\d{6}\.html)">(.*?)<\/a><br>'
             matches = re.compile(regexnasa, re.DOTALL).findall(data)
             for data, url, desc in matches:
-                '''
-                try:
-                    data = datetime.strptime(data, '%Y %B %d')
-                except ValueError as e:
-                    print('error:', e)
-                '''
                 url = 'https://apod.nasa.gov/apod/' + str(url)
                 data = data + ' ' + str(desc)
                 self.data.append(str(data))
                 self.urls.append(str(url))
                 self.desc.append(str(desc))
-
-                # for search
                 item = data + "###" + url + '\n'
                 items.append(item)
-            # items.sort()
             global itemlist
             itemlist = items
-            # end search
-
             showlist(self.data, self['list'])
             self.load_infos()
             # self['list'].moveToIndex(0)
@@ -296,15 +284,88 @@ class MainApod(Screen):
         return
 
     def load_infos(self):
+        i = len(self.data)
+        if i <= 0:
+            return
+        if self["poster"].instance:
+            self["poster"].instance.setPixmapFromFile(tmpImg)
         try:
-            i = len(self.data)
-            if i > 0:
-                idx = self['list'].getSelectionIndex()
-                info = self.data[idx]
-                if info != '' or info != 'None' or info is not None:
-                    self['info'].setText(str(info))
+            global tmpimg
+            idx = self['list'].getSelectionIndex()
+            if idx < 0 or idx >= len(self.urls):
+                print("Indice non valido:", idx)
+                return
+            info = self.data[idx]
+            self.urlz = self.urls[idx]
+            if info != '' or info != 'None' or info is not None:
+                self['info'].setText(str(info))
+                self.downloadx(self.urlz)
         except Exception as e:
             print('error info:', e)
+
+    def downloadx(self, url=None):
+        tmpimg = os.path.join('/tmp', 'image.png')
+        if os.path.exists(tmpimg):
+            os.remove(tmpimg)
+        url = self.urlz if url is None else url
+        if PY3:
+            url = url.encode()
+        if sys.version_info[0] < 3:
+            url = url.decode('utf-8', errors='ignore')
+        else:
+            url = url
+        if os.path.exists('/var/lib/dpkg/info'):
+            data = checkGZIP(url)
+            self._gotPa(data)
+        else:
+            getPage(url).addCallback(self._gotPa).addErrback(self.errorLoad)
+
+    def _gotPa(self, page):
+        if isinstance(page, bytes):
+            data = page.decode('utf-8', errors='ignore')
+        else:
+            data = page
+        try:
+            regexnasa = r'<IMG SRC="(image\/\d+\/[^"]+\.(?:jpg|png))"\s+alt="([^"]+)"'
+            matches = re.compile(regexnasa, re.DOTALL).findall(data)
+            # if matches:
+            url, desc = matches[0]
+            self.url = 'https://apod.nasa.gov/apod/' + str(url)
+            self.loadDefaultImage()
+        except Exception as e:
+            print("Errore durante il caricamento dei dati:", e)
+            return False
+
+    def loadDefaultImage(self, failure=None):
+        try:
+            global tmpimg, tmpImg
+            tmpimg = os.path.join('/tmp', 'image.png')
+            if os.path.exists(tmpimg):
+                os.remove(tmpimg)
+            import requests as r
+            from PIL import Image
+            if failure:
+                print("*** failure *** %s" % failure)
+            image_request = r.get(self.url)
+            image_request.raise_for_status()
+            # image_extension = os.path.splitext(self.url)[1]
+            # image_path = f'/tmp/image{image_extension}'
+            with open(tmpimg, 'wb') as img:
+                img.write(image_request.content)
+            im = Image.open(tmpimg).convert("RGBA")
+            size = [450, 250]
+            im.thumbnail(size, Image.LANCZOS)
+            im.save(tmpimg)
+            if tmpimg is not None and os.path.exists(tmpimg) and os.path.getsize(tmpimg) > 50:
+                tmpimg = tmpimg
+            else:
+                tmpimg = tmpImg
+            self["poster"].instance.setPixmapFromFile(tmpimg)
+            # return True
+        except r.exceptions.RequestException as e:
+            print("Errore durante il download dell'immagine:", e)
+        except Exception as e:
+            print("Errore inaspettato:", e)
 
     def up(self):
         self[self.currentList].up()
@@ -324,7 +385,7 @@ class MainApod(Screen):
 
     def prev_blue(self):
         i = len(self.data)
-        if i < 0:
+        if i <= 0:
             return
         idx = self['list'].getSelectionIndex()
         url = self.urls[idx]
@@ -332,11 +393,9 @@ class MainApod(Screen):
         if PY3:
             url = url.encode()
         if os.path.exists('/var/lib/dpkg/info'):
-            print('have a dreamOs!!!')
             self.data = checkGZIP(url)
             self.key_blue(self.data)
         else:
-            print('have a Atv-PLi - etc..!!!')
             getPage(url).addCallback(self.key_blue).addErrback(self.errorLoad)
 
     def key_blue(self, page):
@@ -346,7 +405,6 @@ class MainApod(Screen):
         regexnasa = r'alt="([^"]+)"'
         matches = re.compile(regexnasa, re.DOTALL).findall(data)
         for desc in matches:
-            # print('desc is:', str(desc))
             self.descx = str(self.named) + '\n\n' + str(desc) + '\n\n' + 'Archive here https://apod.nasa.gov/apod'
         if self.descx is not None:
             aboutbox = self.session.open(MessageBox, self.descx, MessageBox.TYPE_INFO, timeout=10)
@@ -356,16 +414,30 @@ class MainApod(Screen):
 
     def okRun(self):
         i = len(self.data)
-        if i < 0:
+        if i <= 0:
             return
         idx = self['list'].getSelectionIndex()
+        if idx < 0 or idx >= len(self.urls):
+            print("Indice non valido:", idx)
+            return
         url = self.urls[idx]
-        self.session.open(MainApod2, url)
+        if url:
+            try:
+                self.session.open(MainApod2, url)
+            except Exception as e:
+                print("Errore nell'aprire l'URL:", e)
+                self.session.open(MessageBox, _('Errore nell\'apertura dell\'immagine!'), MessageBox.TYPE_ERROR)
+        else:
+            print("URL non valido:", url)
+            self.session.open(MessageBox, _('URL non valido!'), MessageBox.TYPE_ERROR)
 
     def backhome(self):
         if search_ok is True:
             self.downloadxmlpage()
         else:
+            tmpimg = os.path.join('/tmp', 'image.png')
+            if os.path.exists(tmpimg):
+                os.remove(tmpimg)
             self.close()
 
 
@@ -389,16 +461,18 @@ class MainApod2(Screen):
                                                        'green': self.clsgo}, -1)
         self.onLayoutFinish.append(self.downloadxmlpage)
 
-    def downloadxmlpage(self):
-        url = self.url
+    def downloadxmlpage(self, url=None):
+        tmpimg = os.path.join('/tmp', 'image.png')
+        if os.path.exists(tmpimg):
+            os.remove(tmpimg)
+        url = self.url if url is None else url
         if PY3:
             url = url.encode()
+        print('my 2 url download=', url)
         if os.path.exists('/var/lib/dpkg/info'):
-            print('have a dreamOs!!!')
             self.data = checkGZIP(url)
             self._gotPageLoad(self.data)
         else:
-            print('have a Atv-PLi - etc..!!!')
             getPage(url).addCallback(self._gotPageLoad).addErrback(self.errorLoad)
 
     def errorLoad(self, error):
@@ -406,110 +480,67 @@ class MainApod2(Screen):
         self['info'].setText(_('Addons Download Failure\nNo internet connection or server down !'))
 
     def _gotPageLoad(self, page):
-        self.url = ''
-        self.desc = ''
+        self.desc = 'Hello!!'
         data = page.decode('utf-8', errors='ignore')
         try:
-            '''
-            print('content: ', data)
-            <IMG SRC="image/2408/MoonEclipsesSaturn_Sanz_960.jpg"
-            alt="A picture of the edge of the Earth's familiar Moon
-            takes up the right part of the frame, while a partial image
-            of Saturn is visible just behind it on the left.
-            Please see the explanation for more detailed information."
-            '''
             regexnasa = r'<IMG SRC="(image\/\d+\/[^"]+\.(?:jpg|png))"\s+alt="([^"]+)"'
             matches = re.compile(regexnasa, re.DOTALL).findall(data)
-            for url, desc in matches:
+            if matches:
+                url, desc = matches[0]
                 self.url = 'https://apod.nasa.gov/apod/' + str(url)
                 self.desc = str(desc)
-
-            self.loadDefaultImage()
+                self.loadDefaultImage()
+            else:
+                print("No Image")
+                self['info'].setText(_('Nessuna immagine trovata.'))
         except Exception as e:
-            print(e)
-            print("Error: can't find file or read data")
-        return
+            print("Errore durante il caricamento dei dati:", e)
 
     def loadDefaultImage(self, failure=None):
         try:
-            import os
+            global tmpimg, tmpImg
+            tmpimg = os.path.join('/tmp', 'image.png')
+            if os.path.exists(tmpimg):
+                os.remove(tmpimg)
+
             import requests as r
+            from PIL import Image
             if failure:
                 print("*** failure *** %s" % failure)
-
-            # description image
-            continfo = str(self.desc) + '\n'
-            continfo += _('https://apod.nasa.gov') + '\n\n'
-            print('continfo=', continfo)
-            try:
-                self['text'].setText(continfo)
-            except:
-                self['text'].setText(_('\n\n' + 'Error downloading data!'))
-
+            continfo = f"{self.desc}\nhttps://apod.nasa.gov\n\n"
+            self['text'].setText(continfo)
             image_request = r.get(self.url)
-            image_request.raise_for_status()  # Check for HTTP errors
-            '''
-            if image_request != 200:
-                self.url = "https://apod.nasa.gov/apod/image/2409/NightTatra_Rosadzinski_960.jpg"
-            '''
-            # Get the image file extension from the URL
-            image_extension = os.path.splitext(self.url)[1]
-            image_path = '/tmp/image' + image_extension
-            image_path2 = '/tmp/image'
-            with open(image_path, 'wb') as img:
+            image_request.raise_for_status()
+            # image_extension = os.path.splitext(self.url)[1]
+            # image_path = f'/tmp/image{image_extension}'
+            with open(tmpimg, 'wb') as img:
                 img.write(image_request.content)
-
-            try:
-                import Image
-            except:
-                from PIL import Image  # , ImageChops
-            im = Image.open(image_path).convert("RGBA")
-
-            size = [1280, 720]
-            if screenwidth.width() == 2560:
-                size = [1920, 1080]
-            elif screenwidth.width() == 1920:
-                size = [1920, 1080]
-
-            im = Image.open(image_path).convert("RGBA")
-            try:
-                im.thumbnail(size, Image.Resampling.LANCZOS)
-            except:
-                im.thumbnail(size, Image.ANTIALIAS)
-            imagew, imageh = im.size
-
-            if imagew < size[0]:
-                ratio = size[0] / imagew
-                try:
-                    im = im.resize((int(imagew * ratio), int(imageh * ratio)), Image.Resampling.LANCZOS)
-                except:
-                    im = im.resize((int(imagew * ratio), int(imageh * ratio)), Image.ANTIALIAS)
-            tmpimg = image_path2 + '.png'
+            im = Image.open(tmpimg).convert("RGBA")
+            size = [450, 250]
+            '''
+            # size = [1280, 720]
+            # screen_width = screenwidth.width()
+            # if screen_width in (1920, 2560):
+                # size = [1920, 1080]
+            '''
+            im.thumbnail(size, Image.LANCZOS)
             im.save(tmpimg)
-            '''
-            imagew, imageh = im.size
-            bg = Image.new("RGBA", size, (255, 255, 255, 0))
-            im_alpha = im.convert("RGBA").split()[-1]
-            bgwidth, bgheight = bg.size
-            bg_alpha = bg.convert("RGBA").split()[-1]
-            temp = Image.new("L", (bgwidth, bgheight), 0)
-            temp.paste(im_alpha, (int((bgwidth - imagew) / 2), int((bgheight - imageh) / 2)), im_alpha)
-            bg_alpha = ImageChops.screen(bg_alpha, temp)
-            im.paste(im, (int((bgwidth - imagew) / 2), int((bgheight - imageh) / 2)))
-            im.save(image_path2 + ".png", "PNG")
-            tmpimg = image_path2 + '.png'
-            '''
-            self["poster"].instance.setPixmapFromFile(os.path.join('tmp', tmpimg))
-
+            if tmpimg is not None and os.path.exists(tmpimg) and os.path.getsize(tmpimg) > 50:
+                tmpimg = tmpimg
+            else:
+                tmpimg = tmpImg
+            self["poster"].instance.setPixmapFromFile(tmpimg)
         except r.exceptions.RequestException as e:
-            print("An error occurred while fetching data: %s" % e)
+            print("Errore durante il download dell'immagine:", e)
         except Exception as e:
-            print("An unexpected error occurred: %s" % e)
+            print("Errore inaspettato:", e)
 
     def clsgo(self):
         self.close()
 
     def DecodePicture(self, PicInfo=None):
+        self.scale = AVSwitch().getFramebufferScale()
+        self.PicLoad = ePicLoad()
         ptr = self.PicLoad.getData()
         if ptr is not None:
             self['poster'].instance.setPixmap(ptr)
@@ -539,95 +570,49 @@ class startApod(Screen):
         try:
             import os
             import requests as r
-            if failure:
-                print("*** failure *** %s" % failure)
-
+            from PIL import Image
+            tmpimg = os.path.join('/tmp', 'image.png')
+            if os.path.exists('/tmp/image.png'):
+                os.remove('/tmp/image.png')
             if self.url is None:
                 self.url = "https://api.nasa.gov/planetary/apod?api_key=YclxOjDyAU3GNzZH2wwcIglfoLcV1WvujcUtncet"
-
             response = r.get(self.url)
-            response.raise_for_status()  # Check for HTTP errors
+            response.raise_for_status()  # Controllo errori HTTP
             data = response.json()
-            '''
-            # if PY3:
-                # data = page.decode("utf-8")
-            # else:
-                # data = page.encode("utf-8")
-            '''
             self.date = data.get('date')
             self.titlex = data.get('title')
             image_url = data.get('url')
-            image_urlhd = data.get('hdurl')
             self.descr = data.get('explanation')
             self.copyr = data.get('copyright')
-
-            continfo = str(self.date) + '\n\n'
-            continfo += str(self.descr) + '\n'
-            continfo += str(self.copyr) + '\n'
-            continfo += _('https://apod.nasa.gov') + '\n\n'
-            # print('continfo=', continfo)
-            try:
-                self['text'].setText(continfo)
-            except:
-                self['text'].setText(_('\n\n' + 'Error downloading data!'))
-
+            continfo = f"{self.date}\n\n{self.descr}\n{self.copyr}\nhttps://apod.nasa.gov\n\n"
+            self['text'].setText(continfo)
             image_request = r.get(image_url)
-            image_request.raise_for_status()  # Check for HTTP errors
-
-            # Get the image file extension from the URL
-            image_extension = os.path.splitext(image_url)[1]
-            image_path = '/tmp/image' + image_extension
-            image_path2 = '/tmp/image'
-            with open(image_path, 'wb') as img:
+            image_request.raise_for_status()  # Controllo errori HTTP
+            # image_extension = os.path.splitext(image_url)[1]
+            # image_path = f'/tmp/image{image_extension}'
+            if not os.path.exists('/tmp'):
+                os.makedirs('/tmp')
+            with open(tmpimg, 'wb') as img:
                 img.write(image_request.content)
-            try:
-                import Image
-            except:
-                from PIL import Image  # , ImageChops
-            im = Image.open(image_path).convert("RGBA")
-
+            im = Image.open(tmpimg).convert("RGBA")
+            im = Image.open(tmpimg).convert("RGBA")
             size = [1280, 720]
-            if screenwidth.width() == 2560:
+            screen_width = screenwidth.width()
+            if screen_width in (1920, 2560):
                 size = [1920, 1080]
-            elif screenwidth.width() == 1920:
-                size = [1920, 1080]
-
-            im = Image.open(image_path).convert("RGBA")
-
-            try:
-                im.thumbnail(size, Image.Resampling.LANCZOS)
-            except:
-                im.thumbnail(size, Image.ANTIALIAS)
-            imagew, imageh = im.size
-
-            if imagew < size[0]:
-                ratio = size[0] / imagew
-                try:
-                    im = im.resize((int(imagew * ratio), int(imageh * ratio)), Image.Resampling.LANCZOS)
-                except:
-                    im = im.resize((int(imagew * ratio), int(imageh * ratio)), Image.ANTIALIAS)
-
-            tmpimg = image_path2 + '.png'
+            im.thumbnail(size, Image.Resampling.LANCZOS)
             im.save(tmpimg)
-            '''
-            imagew, imageh = im.size
-            bg = Image.new("RGBA", size, (255, 255, 255, 0))
-            im_alpha = im.convert("RGBA").split()[-1]
-            bgwidth, bgheight = bg.size
-            bg_alpha = bg.convert("RGBA").split()[-1]
-            temp = Image.new("L", (bgwidth, bgheight), 0)
-            temp.paste(im_alpha, (int((bgwidth - imagew) / 2), int((bgheight - imageh) / 2)), im_alpha)
-            bg_alpha = ImageChops.screen(bg_alpha, temp)
-            im.paste(im, (int((bgwidth - imagew) / 2), int((bgheight - imageh) / 2)))
-            im.save(image_path2 + ".png", "PNG")
-            tmpimg = image_path2 + '.png'
-            '''
-            self["poster"].instance.setPixmapFromFile(os.path.join('tmp', tmpimg))
-
+            if tmpimg is not None and os.path.exists(tmpimg) and os.path.getsize(tmpimg) > 50:
+                tmpimg = tmpimg
+            else:
+                tmpimg = tmpImg
+            self["poster"].instance.setPixmapFromFile(tmpimg)
         except r.exceptions.RequestException as e:
-            print("An error occurred while fetching data: %s" % e)
+            print("An error occurred while fetching data:", e)
+            self['text'].setText(_('Errore durante il download dell\'immagine.'))
         except Exception as e:
-            print("An unexpected error occurred: %s" % e)
+            print("An unexpected error occurred:", e)
+            self['text'].setText(_('Errore inaspettato.'))
         '''
         {
             "copyright": "\nAnirudh Shastry\n",
@@ -650,7 +635,11 @@ class startApod(Screen):
         '''
 
     def clsgo(self):
-        self.session.openWithCallback(self.close, MainApod)
+        try:
+            self.session.openWithCallback(self.close, MainApod)
+        except Exception as e:
+            print('error on exit=', e)
+            self.close()
 
 
 def main(session, **kwargs):

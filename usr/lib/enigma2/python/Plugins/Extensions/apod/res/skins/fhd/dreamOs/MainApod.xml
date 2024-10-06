@@ -20,4 +20,5 @@
 	<widget name="key_yellow" position="710,940" size="300,40" font="Regular;30" halign="right" valign="center" backgroundColor="black" zPosition="5" transparent="1" />
 	<widget name="key_blue" position="710,1000" size="300,40" font="Regular;30" halign="right" valign="center" backgroundColor="black" zPosition="5" transparent="1" />
 	<eLabel name="" position="991,35" size="52,52" backgroundColor="#10808080" halign="center" valign="center" transparent="0" cornerRadius="26" font="Regular; 17" zPosition="4" text="INFO" />
+	<widget name="poster" position="1221,225" size="620,410" alphatest="off" scale="stretch" zPosition="5" />
 </screen>

@@ -6,11 +6,13 @@ from Tools.Directories import resolveFilename, SCOPE_PLUGINS
 import gettext
 import os
 import sys
+
+
 PluginLanguageDomain = 'apod'
 PluginLanguagePath = 'Extensions/apod/res/locale'
 plugin_path = '/usr/lib/enigma2/python/Plugins/Extensions/apod'
 isDreamOS = False
-if os.path.exists("/var/lib/dpkg/status"):
+if os.path.exists("/usr/bin/apt-get"):
     isDreamOS = True
 
 
@@ -41,15 +43,19 @@ def localeInit():
     gettext.bindtextdomain(PluginLanguageDomain, resolveFilename(SCOPE_PLUGINS, PluginLanguagePath))
 
 
-if isDreamOS:  # check if DreamOS image
-    _ = lambda txt: gettext.dgettext(PluginLanguageDomain, txt) if txt else ""
+if isDreamOS:
+    def _(txt):
+        return gettext.dgettext(PluginLanguageDomain, txt) if txt else ""
 else:
     def _(txt):
-        if gettext.dgettext(PluginLanguageDomain, txt):
-            return gettext.dgettext(PluginLanguageDomain, txt)
+        translated = gettext.dgettext(PluginLanguageDomain, txt)
+        if translated:
+            return translated
         else:
             print(("[%s] fallback to default translation for %s" % (PluginLanguageDomain, txt)))
             return gettext.gettext(txt)
+
+
 localeInit()
 language.addCallback(localeInit)
 
@@ -132,17 +138,53 @@ def checkGZIP(url, max_retries=3, base_delay=1):
     return None
 '''
 
+'''
+# def checkGZIP(url):
+    # url = url
+    # from io import StringIO
+    # import gzip
+    # import requests
+    # import sys
+    # if sys.version_info[0] == 3:
+        # from urllib.request import (urlopen, Request)
+    # else:
+        # from urllib2 import (urlopen, Request)
+    # AgentRequest = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.3'
+    # hdr = {"User-Agent": AgentRequest}
+    # response = None
+    # request = Request(url, headers=hdr)
+    # try:
+        # response = urlopen(request, timeout=10)
+        # if response.info().get('Content-Encoding') == 'gzip':
+            # buffer = StringIO(response.read())
+            # deflatedContent = gzip.GzipFile(fileobj=buffer)
+            # if sys.version_info[0] == 3:
+                # return deflatedContent.read().decode('utf-8')
+            # else:
+                # return deflatedContent.read()
+        # else:
+            # if sys.version_info[0] == 3:
+                # return response.read().decode('utf-8')
+            # else:
+                # return response.read()
+
+    # except requests.exceptions.RequestException as e:
+        # print("Request error:", e)
+    # except Exception as e:
+        # print("Unexpected error:", e)
+    # return None
+'''
+
 
 def checkGZIP(url):
-    url = url
-    from io import StringIO
+    from io import BytesIO  # Usa BytesIO per la compatibilità
     import gzip
     import requests
     import sys
     if sys.version_info[0] == 3:
-        from urllib.request import (urlopen, Request)
+        from urllib.request import urlopen, Request
     else:
-        from urllib2 import (urlopen, Request)
+        from urllib2 import urlopen, Request
     AgentRequest = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.3'
     hdr = {"User-Agent": AgentRequest}
     response = None
@@ -150,18 +192,17 @@ def checkGZIP(url):
     try:
         response = urlopen(request, timeout=10)
         if response.info().get('Content-Encoding') == 'gzip':
-            buffer = StringIO(response.read())
-            deflatedContent = gzip.GzipFile(fileobj=buffer)
-            if sys.version_info[0] == 3:
-                return deflatedContent.read().decode('utf-8')
-            else:
-                return deflatedContent.read()
+            buffer = BytesIO(response.read())  # Leggi i dati in un buffer di byte
+            with gzip.GzipFile(fileobj=buffer) as deflatedContent:  # Decomprimi i dati
+                if sys.version_info[0] == 3:
+                    return deflatedContent.read().decode('utf-8')  # Decodifica in utf-8 per Python 3
+                else:
+                    return deflatedContent.read()  # Ritorna i byte per Python 2
         else:
             if sys.version_info[0] == 3:
-                return response.read().decode('utf-8')
+                return response.read().decode('utf-8')  # Decodifica per Python 3
             else:
-                return response.read()
-
+                return response.read()  # Ritorna i byte per Python 2
     except requests.exceptions.RequestException as e:
         print("Request error:", e)
     except Exception as e:
