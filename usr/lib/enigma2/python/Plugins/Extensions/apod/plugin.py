@@ -173,7 +173,6 @@ class MainApod(Screen):
         self['list'] = apList([])
         self['info'] = Label()
         self["poster"] = Pixmap()
-        # self['poster'].hide()
         self['key_red'] = Button(_('Back'))
         self['key_green'] = Button()
         self['key_yellow'] = Button(_('Search'))
@@ -183,7 +182,6 @@ class MainApod(Screen):
         self['actions'] = ActionMap(['EPGSelectActions',
                                      'OkCancelActions',
                                      'DirectionActions',
-                                     # 'ButtonSetupActions',
                                      'ColorActions'], {'ok': self.okRun,
                                                        'cancel': self.backhome,
                                                        'red': self.backhome,
@@ -328,7 +326,6 @@ class MainApod(Screen):
         try:
             regexnasa = r'<IMG SRC="(image\/\d+\/[^"]+\.(?:jpg|png))"\s+alt="([^"]+)"'
             matches = re.compile(regexnasa, re.DOTALL).findall(data)
-            # if matches:
             url, desc = matches[0]
             self.url = 'https://apod.nasa.gov/apod/' + str(url)
             self.loadDefaultImage()
@@ -348,8 +345,6 @@ class MainApod(Screen):
                 print("*** failure *** %s" % failure)
             image_request = r.get(self.url)
             image_request.raise_for_status()
-            # image_extension = os.path.splitext(self.url)[1]
-            # image_path = f'/tmp/image{image_extension}'
             with open(tmpimg, 'wb') as img:
                 img.write(image_request.content)
             im = Image.open(tmpimg).convert("RGBA")
@@ -361,7 +356,6 @@ class MainApod(Screen):
             else:
                 tmpimg = tmpImg
             self["poster"].instance.setPixmapFromFile(tmpimg)
-            # return True
         except r.exceptions.RequestException as e:
             print("Errore durante il download dell'immagine:", e)
         except Exception as e:
@@ -502,27 +496,18 @@ class MainApod2(Screen):
             tmpimg = os.path.join('/tmp', 'image.png')
             if os.path.exists(tmpimg):
                 os.remove(tmpimg)
-
             import requests as r
             from PIL import Image
             if failure:
                 print("*** failure *** %s" % failure)
-            continfo = f"{self.desc}\nhttps://apod.nasa.gov\n\n"
+            continfo = self.desc + "\nhttps://apod.nasa.gov\n"
             self['text'].setText(continfo)
             image_request = r.get(self.url)
             image_request.raise_for_status()
-            # image_extension = os.path.splitext(self.url)[1]
-            # image_path = f'/tmp/image{image_extension}'
             with open(tmpimg, 'wb') as img:
                 img.write(image_request.content)
             im = Image.open(tmpimg).convert("RGBA")
             size = [450, 250]
-            '''
-            # size = [1280, 720]
-            # screen_width = screenwidth.width()
-            # if screen_width in (1920, 2560):
-                # size = [1920, 1080]
-            '''
             im.thumbnail(size, Image.LANCZOS)
             im.save(tmpimg)
             if tmpimg is not None and os.path.exists(tmpimg) and os.path.getsize(tmpimg) > 50:
@@ -577,24 +562,21 @@ class startApod(Screen):
             if self.url is None:
                 self.url = "https://api.nasa.gov/planetary/apod?api_key=YclxOjDyAU3GNzZH2wwcIglfoLcV1WvujcUtncet"
             response = r.get(self.url)
-            response.raise_for_status()  # Controllo errori HTTP
+            response.raise_for_status()
             data = response.json()
             self.date = data.get('date')
             self.titlex = data.get('title')
             image_url = data.get('url')
             self.descr = data.get('explanation')
             self.copyr = data.get('copyright')
-            continfo = f"{self.date}\n\n{self.descr}\n{self.copyr}\nhttps://apod.nasa.gov\n\n"
+            continfo = self.date + "\n\n" + self.descr + "\n" + self.copyr + "\nhttps://apod.nasa.gov\n"
             self['text'].setText(continfo)
             image_request = r.get(image_url)
-            image_request.raise_for_status()  # Controllo errori HTTP
-            # image_extension = os.path.splitext(image_url)[1]
-            # image_path = f'/tmp/image{image_extension}'
+            image_request.raise_for_status()
             if not os.path.exists('/tmp'):
                 os.makedirs('/tmp')
             with open(tmpimg, 'wb') as img:
                 img.write(image_request.content)
-            im = Image.open(tmpimg).convert("RGBA")
             im = Image.open(tmpimg).convert("RGBA")
             size = [1280, 720]
             screen_width = screenwidth.width()
