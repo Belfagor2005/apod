@@ -159,8 +159,8 @@ class MainApod(Screen):
         skin = os.path.join(skin_path, 'MainApod.xml')
         with codecs.open(skin, "r", encoding="utf-8") as f:
             self.skin = f.read()
-        self.setup_title = ('HOME')
-        self.setTitle(title_plug)
+        # self.setup_title = ('HOME')
+        # self.setTitle(title_plug)
         self.PicLoad = ePicLoad()
         global tmpimg
         tmpimg = os.path.join('/tmp', 'image.png')
