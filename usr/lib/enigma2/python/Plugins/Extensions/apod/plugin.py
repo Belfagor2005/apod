@@ -241,7 +241,7 @@ class MainApod(Screen):
 
     def downloadxmlpage(self):
         url = 'http://apod.nasa.gov/apod/archivepix.html'
-        if PY3 and isinstance(self.url, str):
+        if PY3:
             url = url.encode()
         if os.path.exists('/var/lib/dpkg/info'):
             self.data = checkGZIP(url)
@@ -384,7 +384,7 @@ class MainApod(Screen):
         idx = self['list'].getSelectionIndex()
         url = self.urls[idx]
         self.named = self.data[idx]
-        if PY3 and isinstance(self.url, str):
+        if PY3:
             url = url.encode()
         if os.path.exists('/var/lib/dpkg/info'):
             self.data = checkGZIP(url)
@@ -459,8 +459,8 @@ class MainApod2(Screen):
         tmpimg = os.path.join('/tmp', 'image.png')
         if os.path.exists(tmpimg):
             os.remove(tmpimg)
-        url = self.url if url is None else self.url
-        if PY3 and isinstance(self.url, str):
+        # url = self.url if url is None else self.url
+        if PY3:
             url = url.encode()
         print('my 2 url download=', url)
         if os.path.exists('/var/lib/dpkg/info'):
@@ -626,7 +626,8 @@ class startApod(Screen):
 
 def main(session, **kwargs):
     try:
-        session.open(startApod, None)
+        # session.open(startApod, None)
+        session.open(MainApod)
     except:
         import traceback
         traceback.print_exc()
