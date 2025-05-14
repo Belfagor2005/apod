@@ -99,7 +99,7 @@ else
 fi
 
 if [ $OSTYPE != "DreamOs" ]; then
-	opkg update && opkg --force-reinstall --force-overwrite install ffmpeg gstplayer exteplayer3 enigma2-plugin-systemplugins-serviceapp python3-youtube-dl python3-yt-dlp
+	opkg update && opkg --force-reinstall --force-overwrite install ffmpeg gstplayer exteplayer3 enigma2-plugin-systemplugins-serviceapp python3-youtube-dl
 fi
 sleep 2
 
