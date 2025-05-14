@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Apod\n"
 "Report-Msgid-Bugs-To: Lululla <ekekaz@gmail.com>\n"
-"POT-Creation-Date: 2024-08-30 12:55+0200\n"
+"POT-Creation-Date: 2025-05-14 16:53+0200\n"
 "PO-Revision-Date: 2024-08-30 12:55+0200\n"
 "Last-Translator: Lululla <ekekaz@gmail.com>\n"
 "Language-Team: lululla\n"
@@ -12,59 +12,86 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.4.4\n"
-"X-Poedit-Basepath: ../../../..\n"
+"X-Generator: Poedit 3.6\n"
+"X-Poedit-Basepath: ../..\n"
 "X-Poedit-SourceCharset: iso-8859-1\n"
-"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-0: plugin.py\n"
 
-#: Extensions/apod/plugin.py:172
-msgid "Back"
+#: plugin.py:242
+msgid "APOD Plugin Settings"
 msgstr ""
 
-#: Extensions/apod/plugin.py:174
-msgid "Search"
+#: plugin.py:244
+msgid "Save"
 msgstr ""
 
-#: Extensions/apod/plugin.py:203
+#: plugin.py:245
+msgid "Close"
+msgstr ""
+
+#: plugin.py:247
+msgid "NASA API Key:"
+msgstr ""
+
+#: plugin.py:248
+msgid "Number of APODs to fetch:"
+msgstr ""
+
+#: plugin.py:292
+msgid "Loading Astronomy Picture of the Day..."
+msgstr ""
+
+#: plugin.py:309
+msgid "Invalid API Key! Please configure a valid NASA API key."
+msgstr ""
+
+#: plugin.py:353
 #, python-format
-msgid ""
-"Apod Plugin v.%s\n"
-"\n"
-"\n"
-"Thanks:\n"
-"@oktus\n"
-"Corvoboys - Forum\n"
-"\n"
-"If you like the plugin you can offer a coffee:\n"
-"\n"
-"https://ko-fi.com/lululla"
+msgid "Error: %s"
 msgstr ""
 
-#: Extensions/apod/plugin.py:204
-msgid "Info Apod"
+#: plugin.py:376
+msgid "No image URL found."
 msgstr ""
 
-#: Extensions/apod/plugin.py:210
-msgid "Filter this category..."
+#: plugin.py:394
+#, python-format
+msgid "Failed to fetch image: HTTP %d"
 msgstr ""
 
-#: Extensions/apod/plugin.py:232
-msgid "No Image Map found in search!!!"
+#: plugin.py:397
+#, python-format
+msgid "Error downloading image: %s"
 msgstr ""
 
-#: Extensions/apod/plugin.py:254 Extensions/apod/plugin.py:382
-msgid ""
-"Addons Download Failure\n"
-"No internet connection or server down !"
+#: plugin.py:451
+msgid "Loading..."
 msgstr ""
 
-#: Extensions/apod/plugin.py:468 Extensions/apod/plugin.py:586
-msgid "https://apod.nasa.gov"
+#: plugin.py:564
+msgid "Error loading data. Try later."
 msgstr ""
 
-#: Extensions/apod/plugin.py:473 Extensions/apod/plugin.py:591
-msgid ""
-"\n"
-"\n"
-"Error downloading data!"
+#: plugin.py:625
+msgid "Search..."
+msgstr ""
+
+#: plugin.py:724
+msgid "Press OK to play video"
+msgstr ""
+
+#: plugin.py:767
+msgid "Wait please..."
+msgstr ""
+
+#: plugin.py:829
+msgid "Unsupported video URL"
+msgstr ""
+
+#: plugin.py:859 plugin.py:862
+msgid "Video playback failed"
+msgstr ""
+
+#: plugin.py:907
+msgid "Failed to load image."
 msgstr ""

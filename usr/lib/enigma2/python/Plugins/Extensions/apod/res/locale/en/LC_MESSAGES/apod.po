@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Apod\n"
 "Report-Msgid-Bugs-To: Lululla <ekekaz@gmail.com>\n"
-"POT-Creation-Date: 2024-08-30 12:55+0200\n"
-"PO-Revision-Date: 2024-08-30 12:55+0200\n"
+"POT-Creation-Date: 2025-05-14 01:18+0200\n"
+"PO-Revision-Date: 2025-05-14 01:18+0200\n"
 "Last-Translator: Lululla <ekekaz@gmail.com>\n"
 "Language-Team: lululla\n"
 "Language: en\n"
@@ -11,67 +11,77 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.4.4\n"
+"X-Generator: Poedit 3.6\n"
 "X-Poedit-Basepath: ../../../..\n"
 "X-Poedit-SourceCharset: iso-8859-1\n"
-"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-0: plugin.py\n"
 
-#: plugin.py:172
-msgid "Back"
+#: plugin.py:244
+msgid "APOD Plugin Settings"
 msgstr ""
 
-#: plugin.py:174
-msgid "Search"
+#: plugin.py:246
+msgid "Save"
 msgstr ""
 
-#: plugin.py:203
+#: plugin.py:247
+msgid "Close"
+msgstr ""
+
+#: plugin.py:249
+msgid "NASA API Key:"
+msgstr ""
+
+#: plugin.py:250
+msgid "Number of APODs to fetch:"
+msgstr ""
+
+#: plugin.py:294
+msgid "Loading Astronomy Picture of the Day..."
+msgstr ""
+
+#: plugin.py:311
+msgid "Invalid API Key! Please configure a valid NASA API key."
+msgstr ""
+
+#: plugin.py:385
 #, python-format
-msgid ""
-"Apod Plugin v.%s\n"
-"\n"
-"\n"
-"Thanks:\n"
-"@oktus\n"
-"Corvoboys - Forum\n"
-"\n"
-"If you like the plugin you can offer a coffee:\n"
-"\n"
-"https://ko-fi.com/lululla"
+msgid "Error: %s"
 msgstr ""
 
-#: plugin.py:204
-msgid "Info Apod"
+#: plugin.py:403
+msgid "No image URL found."
 msgstr ""
 
-#: plugin.py:210
-msgid "Filter this category..."
+#: plugin.py:421
+#, python-format
+msgid "Failed to fetch image: HTTP %d"
 msgstr ""
 
-#: plugin.py:232
-msgid "No Image Map found in search!!!"
-msgstr ""
-
-#: plugin.py:254 plugin.py:382
-msgid ""
-"Addons Download Failure\n"
-"No internet connection or server down !"
-msgstr ""
-
-#: plugin.py:468 plugin.py:586
-msgid "https://apod.nasa.gov"
-msgstr ""
-
-#: plugin.py:473 plugin.py:591
-#, fuzzy
+#: plugin.py:424
+#, fuzzy, python-format
 #| msgid ""
 #| "\n"
 #| "\n"
 #| "Errore nel download degli aggiornamenti !"
-msgid ""
-"\n"
-"\n"
-"Error downloading data!"
+msgid "Error downloading image: %s"
 msgstr ""
 "\n"
 "\n"
 "Error downloading updates!"
+
+#: plugin.py:475
+msgid "Loading..."
+msgstr ""
+
+#: plugin.py:602
+msgid "Search..."
+msgstr ""
+
+#: plugin.py:696
+msgid "Wait please..."
+msgstr ""
+
+#: plugin.py:752
+msgid "Failed to load image."
+msgstr ""

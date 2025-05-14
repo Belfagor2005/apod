@@ -1,11 +1,11 @@
 Package: enigma2-plugin-extensions-apod
-Version: 1.4
+Version: 1.6
 Section: extra
 Priority: optional
 Architecture: all
 Maintainer: @lululla
 Description: Apod image of the day
-Source: lululla
+Source: enigma2-plugin-extensions-apod
 Homepage: corvoboys.org
 OE: 2.0-2.2-2.5
 License: O.S.

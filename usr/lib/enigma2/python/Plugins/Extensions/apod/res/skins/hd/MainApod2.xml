@@ -1,5 +1,0 @@
-<!-- Skin MainApod2 16/08/2024 -->
-<screen name="MainApod2" flags="wfNoBorder" position="center,center" size="1280,720" title="..::apod::.." backgroundColor="#30000000">
-	<widget name="poster" position="300,0" size="980,720" alphatest="off" scale="stretch" zPosition="1" />
-	<widget name="text" position="0,0" size="300,720" font="Regular; 20" halign="left" valign="top" foregroundColor="#ffcc00" backgroundColor="#000000" transparent="1" zPosition="5" />
-</screen>
