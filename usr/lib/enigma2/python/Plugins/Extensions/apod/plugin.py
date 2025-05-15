@@ -78,12 +78,7 @@ from Tools.Directories import fileExists
 # Local project
 from . import _
 
-"""
-from Components.MultiContent import (
-	MultiContentEntryPixmapAlphaTest,
-	MultiContentEntryText
-)
-"""
+
 """
 ---
 
@@ -92,7 +87,7 @@ from Components.MultiContent import (
 To access the Astronomy Picture of the Day (APOD) data from NASA, you need a valid API key.
 
 * Visit the NASA API registration page:
-  `https://api.nasa.gov/`
+    https://api.nasa.gov/`
 
 * After completing the registration, you will receive a unique API key that grants access to the data.
 ---
@@ -139,7 +134,7 @@ plugin_path = '/usr/lib/enigma2/python/Plugins/Extensions/apod'
 CACHE_DIR = "/tmp/apod_cache/"
 
 if not exists(CACHE_DIR):
-	makedirs(CACHE_DIR)
+    makedirs(CACHE_DIR)
 
 TMP_IMG_PNG = join(CACHE_DIR, "apod.png")
 TMP_IMG_JPG = join(CACHE_DIR, "apod.jpg")
@@ -246,7 +241,7 @@ class APODConfigScreen(ConfigListScreen, Screen):
 		self.list = [
 			getConfigListEntry(_("NASA API Key:"), config.plugins.apod.api_key),
 			getConfigListEntry(_("Number of APODs to fetch:"), config.plugins.apod.count),
-			getConfigListEntry("Sort order:", config.plugins.apod.sort_order)
+			getConfigListEntry(_("Sort order:", config.plugins.apod.sort_order))
 		]
 		ConfigListScreen.__init__(self, self.list)
 
@@ -406,13 +401,13 @@ class ArchiveScreen(Screen):
 	skin = """
 	<screen name="ArchiveScreen" position="center,center" size="1600,900" flags="wfNoBorder">
 		<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/apod/res/icons/back.png" position="0,0" size="1600,900" alphatest="blend" zPosition="-3" cornerRadius="30" />
-		<ePixmap position="0,0" size="1600,900" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/apod/res/icons/backgtr.png" alphatest="blend" zPosition="-2" cornerRadius="30"/>
-		<widget source="list" render="Listbox" position="204,74" size="1200,720" transparent="1" itemHeight="60" enableWrapAround="1" scrollbarMode="showNever">
+		<ePixmap position="0,0" size="1600,900" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/apod/res/icons/backgtr.png" alphatest="blend" zPosition="-2" cornerRadius="30" />
+		<widget source="list" render="Listbox" position="204,60" size="1200,740" transparent="1" itemHeight="60" enableWrapAround="1" scrollbarMode="showNever">
 			<convert type="TemplatedMultiContent">
 				{
 					"template": [
 						MultiContentEntryPixmapAlphaBlend(
-							pos=(10, 10),
+							pos=(10, 5),
 							size=(50, 50),
 							png=0
 						),
@@ -436,13 +431,13 @@ class ArchiveScreen(Screen):
 				}
 			</convert>
 		</widget>
-		<widget name="title" position="1,0" size="1600,61" font="Regular; 32" transparent="1" zPosition="3" halign="center" />
-		<widget name="status" position="203,808" size="1203,50" font="Regular;28" halign="center" />
-		<eLabel name="" position="1464,300" size="75,75" backgroundColor="#002a2a2a" halign="center" valign="center" transparent="0" cornerRadius="40" font="Regular; 17" zPosition="1" text="OK" />
+		<widget name="title" position="5,5" size="1600,50" font="Regular; 32" transparent="1" zPosition="3" halign="center" />
+		<widget name="status" position="203,815" size="1203,50" font="Regular;28" halign="center" />
 		<eLabel name="" position="1465,210" size="75,75" backgroundColor="#002a2a2a" halign="center" valign="center" transparent="0" cornerRadius="40" font="Regular; 17" zPosition="1" text="MENU" />
-		<eLabel name="" position="1470,395" size="70,70" backgroundColor="#002a2a2a" halign="center" valign="center" transparent="0" cornerRadius="40" font="Regular; 17" zPosition="1" text="INFO" />
-		<eLabel name="" position="1470,490" size="75,75" backgroundColor="#2a70a4" halign="center" valign="center" transparent="0" cornerRadius="40" font="Regular; 17" zPosition="1" text="SEARCH" />
-		<eLabel name="" position="1470,595" size="75,75" backgroundColor="#9f1313" halign="center" valign="center" transparent="0" cornerRadius="40" font="Regular; 17" zPosition="1" text="EXIT" />
+		<eLabel name="" position="1465,300" size="75,75" backgroundColor="#002a2a2a" halign="center" valign="center" transparent="0" cornerRadius="40" font="Regular; 17" zPosition="1" text="OK" />
+		<eLabel name="" position="1465,390" size="75,75" backgroundColor="#002a2a2a" halign="center" valign="center" transparent="0" cornerRadius="40" font="Regular; 17" zPosition="1" text="INFO" />
+		<eLabel name="" position="1465,480" size="75,75" backgroundColor="#2a70a4" halign="center" valign="center" transparent="0" cornerRadius="40" font="Regular; 17" zPosition="1" text="SEARCH" />
+		<eLabel name="" position="1465,570" size="75,75" backgroundColor="#9f1313" halign="center" valign="center" transparent="0" cornerRadius="40" font="Regular; 17" zPosition="1" text="EXIT" />
 	</screen>"""
 
 	def __init__(self, session):
@@ -865,9 +860,11 @@ class DetailScreen(Screen):
 		try:
 			from enigma import ePicLoad
 			self.picload = ePicLoad()
-			self.picload.setPara((self["image"].instance.size().width(),
-								  self["image"].instance.size().height(),
-								  1, 1, 0, 0, '#00000000'))
+			self.picload.setPara(
+				(self["image"].instance.size().width(),
+				 self["image"].instance.size().height(),
+				 1, 1, 0, 0, '#00000000')
+			)
 			self.picload.startDecode(url)
 			self.gif_timer = eTimer()
 			self.gif_timer.callback.append(self.check_gif_status)
