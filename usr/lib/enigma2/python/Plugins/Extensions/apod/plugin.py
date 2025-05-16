@@ -87,7 +87,7 @@ from . import _
 To access the Astronomy Picture of the Day (APOD) data from NASA, you need a valid API key.
 
 * Visit the NASA API registration page:
-    https://api.nasa.gov/`
+	https://api.nasa.gov/`
 
 * After completing the registration, you will receive a unique API key that grants access to the data.
 ---
@@ -134,7 +134,7 @@ plugin_path = '/usr/lib/enigma2/python/Plugins/Extensions/apod'
 CACHE_DIR = "/tmp/apod_cache/"
 
 if not exists(CACHE_DIR):
-    makedirs(CACHE_DIR)
+	makedirs(CACHE_DIR)
 
 TMP_IMG_PNG = join(CACHE_DIR, "apod.png")
 TMP_IMG_JPG = join(CACHE_DIR, "apod.jpg")
@@ -241,7 +241,7 @@ class APODConfigScreen(ConfigListScreen, Screen):
 		self.list = [
 			getConfigListEntry(_("NASA API Key:"), config.plugins.apod.api_key),
 			getConfigListEntry(_("Number of APODs to fetch:"), config.plugins.apod.count),
-			getConfigListEntry(_("Sort order:", config.plugins.apod.sort_order))
+			getConfigListEntry(_("Sort order:"), config.plugins.apod.sort_order)
 		]
 		ConfigListScreen.__init__(self, self.list)
 
@@ -616,8 +616,12 @@ class ArchiveScreen(Screen):
 			self.session.open(MessageBox, f"Title: {title}\n\nExplanation:\n{explanation}", MessageBox.TYPE_INFO)
 
 	def search_apod(self):
-		self.session.openWithCallback(self.on_search_entered,
-									  VirtualKeyBoard, title=_("Search..."), text="")
+		self.session.openWithCallback(
+			self.on_search_entered,
+			VirtualKeyBoard,
+			title=_("Search..."),
+			text=""
+		)
 
 	def on_search_entered(self, result):
 		if not result:
@@ -860,11 +864,15 @@ class DetailScreen(Screen):
 		try:
 			from enigma import ePicLoad
 			self.picload = ePicLoad()
+			self.picload = ePicLoad()
 			self.picload.setPara(
-				(self["image"].instance.size().width(),
-				 self["image"].instance.size().height(),
-				 1, 1, 0, 0, '#00000000')
+				(
+					self["image"].instance.size().width(),
+					self["image"].instance.size().height(),
+					1, 1, 0, 0, '#00000000'
+				)
 			)
+
 			self.picload.startDecode(url)
 			self.gif_timer = eTimer()
 			self.gif_timer.callback.append(self.check_gif_status)
