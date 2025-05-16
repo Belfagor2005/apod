@@ -464,8 +464,8 @@ class ArchiveScreen(Screen):
 				"info": self.show_info
 			}, -1)
 
-		self.onShow.append(self.start_loading)
-		# self.onLayoutFinish.append(self.start_loading)
+		# self.onShow.append(self.start_loading)
+		self.onLayoutFinish.append(self.start_loading)
 
 	def load_pixmap(self, filename):
 		"""
