@@ -2,20 +2,33 @@
 # <!-- **************************************  -->
 # <!-- Don't Remove this Disclaimer            -->
 # <!-- **************************************  -->
-echo
+echo ""
 echo "*****************************************"
-echo "*         Uninstall Apod Plugin          *"
+echo "*      APOD Plugin v1.7 Uninstall       *"
+echo "*    Astronomy Picture of the Day       *"
 echo "*****************************************"
+echo ""
 
 EXTDIR="/usr/lib/enigma2/python/Plugins/Extensions/apod"
 
 if [ -d "$EXTDIR" ]; then
-   rm -rf "$EXTDIR" > /dev/null 2>&1
+    echo "Removing APOD plugin files..."
+    rm -rf "$EXTDIR" > /dev/null 2>&1
+    echo "Plugin files removed."
+else
+    echo "No APOD plugin installation found."
 fi
 
+# Clean up temporary files and cache
+echo "Cleaning up temporary files..."
+rm -rf "/tmp/apod_cache" > /dev/null 2>&1
+rm -f "/etc/apod_api_key" > /dev/null 2>&1
+rm -f "/etc/enigma2/apod_api_key" > /dev/null 2>&1
+
+echo ""
 echo "*****************************************"
-echo "*          ....done                     *"
+echo "*        Uninstall Complete             *"
 echo "*****************************************"
+echo ""
+
 exit 0
-
-

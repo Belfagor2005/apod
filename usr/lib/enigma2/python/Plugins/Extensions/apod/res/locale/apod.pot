@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Apod\n"
 "Report-Msgid-Bugs-To: Lululla <ekekaz@gmail.com>\n"
-"POT-Creation-Date: 2025-05-14 16:53+0200\n"
+"POT-Creation-Date: 2025-11-22 17:23+0100\n"
 "PO-Revision-Date: 2024-08-30 12:55+0200\n"
 "Last-Translator: Lululla <ekekaz@gmail.com>\n"
 "Language-Team: lululla\n"
@@ -12,86 +12,126 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.6\n"
+"X-Generator: Poedit 3.8\n"
 "X-Poedit-Basepath: ../..\n"
 "X-Poedit-SourceCharset: iso-8859-1\n"
 "X-Poedit-SearchPath-0: plugin.py\n"
 
-#: plugin.py:242
+#: plugin.py:508 plugin.py:509
 msgid "APOD Plugin Settings"
 msgstr ""
 
-#: plugin.py:244
+#: plugin.py:510
 msgid "Save"
 msgstr ""
 
-#: plugin.py:245
-msgid "Close"
+#: plugin.py:511
+msgid "Cancel"
 msgstr ""
 
-#: plugin.py:247
+#: plugin.py:514
 msgid "NASA API Key:"
 msgstr ""
 
-#: plugin.py:248
+#: plugin.py:515
 msgid "Number of APODs to fetch:"
 msgstr ""
 
-#: plugin.py:292
+#: plugin.py:516
+msgid "Sort order:"
+msgstr ""
+
+#: plugin.py:571
 msgid "Loading Astronomy Picture of the Day..."
 msgstr ""
 
-#: plugin.py:309
+#: plugin.py:590
 msgid "Invalid API Key! Please configure a valid NASA API key."
 msgstr ""
 
-#: plugin.py:353
-#, python-format
-msgid "Error: %s"
+#: plugin.py:644
+msgid "Failed to load APOD"
 msgstr ""
 
-#: plugin.py:376
-msgid "No image URL found."
+#: plugin.py:697
+#, python-brace-format
+msgid "Failed to fetch image: HTTP {}"
 msgstr ""
 
-#: plugin.py:394
-#, python-format
-msgid "Failed to fetch image: HTTP %d"
+#: plugin.py:700
+#, python-brace-format
+msgid "Error downloading image: {}"
 msgstr ""
 
-#: plugin.py:397
-#, python-format
-msgid "Error downloading image: %s"
-msgstr ""
-
-#: plugin.py:451
+#: plugin.py:753
 msgid "Loading..."
 msgstr ""
 
-#: plugin.py:564
+#: plugin.py:814
+msgid "Loading fresh APOD data..."
+msgstr ""
+
+#: plugin.py:875
+msgid "No data available. Check API key."
+msgstr ""
+
+#: plugin.py:887
+msgid "Error loading data"
+msgstr ""
+
+#: plugin.py:908
 msgid "Error loading data. Try later."
 msgstr ""
 
-#: plugin.py:625
+#: plugin.py:948
+#, python-brace-format
+msgid "Found {} entries"
+msgstr ""
+
+#: plugin.py:952
+msgid "Error building list"
+msgstr ""
+
+#: plugin.py:978
 msgid "Search..."
 msgstr ""
 
-#: plugin.py:724
+#: plugin.py:1018
+msgid "Found "
+msgstr ""
+
+#: plugin.py:1084
 msgid "Press OK to play video"
 msgstr ""
 
-#: plugin.py:767
-msgid "Wait please..."
+#: plugin.py:1095
+msgid "Loading image..."
 msgstr ""
 
-#: plugin.py:829
+#: plugin.py:1099
+msgid "No image URL available"
+msgstr ""
+
+#: plugin.py:1144
+msgid "Error displaying image"
+msgstr ""
+
+#: plugin.py:1147
+msgid "Image not available"
+msgstr ""
+
+#: plugin.py:1152
+msgid "Failed to download image"
+msgstr ""
+
+#: plugin.py:1190
 msgid "Unsupported video URL"
 msgstr ""
 
-#: plugin.py:859 plugin.py:862
+#: plugin.py:1220 plugin.py:1223
 msgid "Video playback failed"
 msgstr ""
 
-#: plugin.py:907
+#: plugin.py:1271
 msgid "Failed to load image."
 msgstr ""

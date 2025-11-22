@@ -1,14 +1,44 @@
 #!/bin/sh
+echo ""
 echo "***********************************"
 echo "***********************************"
-echo "  Please E2 Restart Is Required ..."
-echo "***********************************"
-echo "          ..A P O D..              "
-echo "***********************************"
-echo "*         by Lululla              *"
+echo "*    APOD Plugin v1.7 Installed   *"
+echo "*  Astronomy Picture of the Day   *"
 echo "***********************************"
 echo "***********************************"
+echo ""
+echo "  Please Restart Enigma2 Required"
+echo ""
+echo "***********************************"
+echo "*           Features:             *"
+echo "*   - NASA APOD Integration       *"
+echo "*   - Multi-format Image Support  *"
+echo "*   - YouTube Video Playback      *"
+echo "*   - Animated GIF Support        *"
+echo "*   - Secure API Key Management   *"
+echo "***********************************"
+echo "*          by Lululla             *"
+echo "***********************************"
+echo ""
 echo "*     Installed Successfully      *"
-echo "*     Please Restart E2 Now       *"
+echo "*     Please Restart Enigma2      *"
 echo "***********************************"
+echo ""
+
+# Set proper permissions for plugin files
+PLUGIN_DIR="/usr/lib/enigma2/python/Plugins/Extensions/apod"
+if [ -d "$PLUGIN_DIR" ]; then
+    chmod -R 755 "$PLUGIN_DIR" > /dev/null 2>&1
+    echo "Plugin permissions set."
+fi
+
+# Create cache directory with proper permissions
+mkdir -p "/tmp/apod_cache" > /dev/null 2>&1
+chmod 755 "/tmp/apod_cache" > /dev/null 2>&1
+
+echo ""
+echo "Note: Configure your NASA API key in plugin settings"
+echo "Get API key from: https://api.nasa.gov"
+echo ""
+
 exit 0

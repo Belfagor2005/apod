@@ -1,8 +1,8 @@
 #!/bin/bash
 ## setup command=wget -q --no-check-certificate https://raw.githubusercontent.com/Belfagor2005/apod/main/installer.sh -O - | /bin/sh
 
-version='1.6'
-changelog='\nRecoded structure for player video'
+version='1.7'
+changelog='\nRecoded Sources'
 TMPPATH=/tmp/apod-install
 FILEPATH=/tmp/apod-main.tar.gz
 

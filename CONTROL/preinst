@@ -1,13 +1,30 @@
 #!/bin/sh
+echo ""
+echo "***********************************"
+echo "*   APOD Plugin v1.7 Pre-Install  *"
+echo "*   Astronomy Picture of the Day  *"
+echo "***********************************"
+echo ""
+
 EXTDIR="/usr/lib/enigma2/python/Plugins/Extensions/apod"
 
 if [ -d "$EXTDIR" ]; then
-   rm -rf "$EXTDIR" > /dev/null 2>&1
+    echo "Removing previous version..."
+    rm -rf "$EXTDIR" > /dev/null 2>&1
+    echo "Old installation cleaned."
+else
+    echo "No previous installation found."
 fi
 
+# Clean up temporary cache
+if [ -d "/tmp/apod_cache" ]; then
+    echo "Cleaning temporary cache..."
+    rm -rf "/tmp/apod_cache" > /dev/null 2>&1
+fi
 
-echo "***********************************"
-echo "* Proceeding to installation...   *"
-echo "***********************************"
+echo ""
+echo "Ready for new installation."
+echo ""
+
 cd /
 exit 0
