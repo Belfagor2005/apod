@@ -1,8 +1,8 @@
 #!/bin/bash
 ## setup command=wget -q --no-check-certificate https://raw.githubusercontent.com/Belfagor2005/apod/main/installer.sh -O - | /bin/sh
 
-version='1.7'
-changelog='Recoded Sources'
+version='1.8'
+changelog='Fix Sonar sign'
 TMPPATH=/tmp/apod-install
 FILEPATH=/tmp/apod-main.tar.gz
 

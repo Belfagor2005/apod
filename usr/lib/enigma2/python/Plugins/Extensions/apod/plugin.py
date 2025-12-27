@@ -36,8 +36,6 @@ from __future__ import print_function
 """
 __author__ = "Lululla"
 
-
-# Standard library
 from datetime import date
 import logging
 from json import dump as json_dump, load as json_load
@@ -47,15 +45,10 @@ from re import search
 from shutil import copyfileobj
 from urllib.parse import urlparse
 
-# Third-party libraries
 import requests
 from twisted.internet import reactor, threads
 from twisted.web.client import downloadPage
-
-# Enigma2 core
 from enigma import eServiceReference, eTimer, getDesktop
-
-# Enigma2 components
 from Components.ActionMap import HelpableActionMap
 from Components.ConfigList import ConfigListScreen
 from Components.Label import Label
@@ -69,20 +62,14 @@ from Components.config import (
     getConfigListEntry
 )
 
-# Enigma2 screens
 from Screens.InfoBar import MoviePlayer
 from Screens.MessageBox import MessageBox
 from Screens.Screen import Screen
 from Screens.VirtualKeyBoard import VirtualKeyBoard
-
-# Enigma2 plugin
 from Plugins.Plugin import PluginDescriptor
-
-# Tools
 from Tools.Directories import fileExists
 from Tools.LoadPixmap import LoadPixmap
 
-# Local project
 from . import _
 
 screen_width = getDesktop(0).size().width()
@@ -135,7 +122,7 @@ Once done, the plugin should be able to access NASA's APOD data and display the 
 """
 
 
-currversion = '1.7'
+currversion = '1.8'
 title_plug = 'Picture of The Day - Nasa %s by %s' % (currversion, __author__)
 plugin_path = '/usr/lib/enigma2/python/Plugins/Extensions/apod'
 CACHE_DIR = "/tmp/apod_cache/"
