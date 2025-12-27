@@ -150,6 +150,7 @@ TMP_LOG = join(CACHE_DIR, "apod_debug.log")
 TMP_JSON = join(CACHE_DIR, "apod_response.json")
 DEFAULT_IMAGE = join(plugin_path, "res/icons/default_apod_image.jpg")
 api_key_file = '/etc/apod_api_key'
+api_key_file2 = '/etc/enigma2/apod_api_key',
 today = date.today()
 logger = logging.getLogger(title_plug)
 
@@ -295,8 +296,8 @@ class APIKeyManager:
     @staticmethod
     def load_apikey_from_file():
         possible_paths = [
-            '/etc/apod_api_key',
-            '/etc/enigma2/apod_api_key',
+            api_key_file,
+            api_key_file2,
             join(plugin_path, 'apod_api_key'),
         ]
 
@@ -532,7 +533,7 @@ class APODConfigScreen(ConfigListScreen, Screen):
         try:
             api_key = config.plugins.apod.api_key.value
             if api_key and len(api_key) == 40 and api_key != "DEMO_KEY":
-                with open('/etc/apod_api_key', 'w') as f:
+                with open(api_key_file, 'w') as f:
                     f.write(api_key)
                 logger.info("API key saved to file")
         except Exception as e:
@@ -1291,8 +1292,8 @@ def debug_api_key_status():
 def check_api_key_locations():
     """Check all possible API key locations"""
     possible_paths = [
-        '/etc/apod_api_key',
-        '/etc/enigma2/apod_api_key',
+        api_key_file,
+        api_key_file2,
         join(plugin_path, 'apod_api_key'),
         '/usr/lib/enigma2/python/Plugins/Extensions/apod/apod_api_key'
     ]
