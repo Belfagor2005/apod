@@ -585,13 +585,14 @@ class SplashScreen(Screen):
         """
         api_key = config.plugins.apod.api_key.value
         if not api_key or api_key == "DEMO_KEY":
-            self.session.openWithCallback(self.close, 
-                MessageBox, 
-                _("Invalid API Key! Please configure a valid NASA API key."), 
+            self.session.openWithCallback(
+                self.close,
+                MessageBox,
+                _("Invalid API Key! Please configure a valid NASA API key."),
                 MessageBox.TYPE_ERROR
             )
             return
-        
+
         threads.deferToThread(self.load_apod).addCallback(self.show_image)
 
     def load_apod(self):
@@ -614,7 +615,6 @@ class SplashScreen(Screen):
             img_response.raise_for_status()
 
             # Save with correct extension from URL
-            from urllib.parse import urlparse
             parsed_url = urlparse(img_url)
             file_ext = splitext(parsed_url.path)[1].lower()
 
@@ -1088,36 +1088,37 @@ class DetailScreen(Screen):
         else:
             self["description"].setText(self.data.get("explanation", ""))
 
-    def load_image(self):
+    def load_image(self, url=None, force=False):
         """
         Download and display the image
         """
         self["description"].setText(_("Loading image..."))
-
-        url = self.data.get("hdurl") or self.data.get("url")
         if not url:
-            self["description"].setText(_("No image URL available"))
-            return
+            url = self.data.get("hdurl") or self.data.get("url")
+            if not url:
+                self["description"].setText(_("No image URL available"))
+                return
 
-        # Determine file extension
-        from urllib.parse import urlparse
-        parsed_url = urlparse(url)
-        file_ext = splitext(parsed_url.path)[1].lower() or ".jpg"
+        if not force:
+            parsed_url = urlparse(url)
+            file_ext = splitext(parsed_url.path)[1].lower() or ".jpg"
+            filename = "{}{}".format(self.data['date'], file_ext)
+            local_path = join(CACHE_DIR, filename)
 
-        # Create unique file name based on date
-        filename = "{}{}".format(self.data['date'], file_ext)
-        local_path = join(CACHE_DIR, filename)
+            if exists(local_path):
+                self.update_image(local_path)
+                return
 
-        if exists(local_path):
-            # Use existing cache
-            self.update_image(local_path)
-        else:
-            # Download new image
-            self.download_image(url, local_path)
+        self.download_image(url, local_path if not force else None)
 
-    def download_image(self, url, local_path):
+    def download_image(self, url, local_path=None):
         """Download image using downloadPage"""
         try:
+            if not local_path:
+                parsed_url = urlparse(url)
+                file_ext = splitext(parsed_url.path)[1].lower() or ".jpg"
+                filename = "{}{}".format(self.data['date'], file_ext)
+                local_path = join(CACHE_DIR, filename)
             logger.info("Downloading image: {}".format(url))
             downloadPage(
                 url.encode('utf-8'),
