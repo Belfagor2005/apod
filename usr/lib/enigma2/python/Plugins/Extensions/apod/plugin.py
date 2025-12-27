@@ -245,7 +245,7 @@ class SecurityManager:
         """Sanitize filenames to prevent path traversal"""
         from re import sub
         # Remove path components and special characters
-        filename = re.sub(r'[^\w\-_.]', '_', filename)
+        filename = sub(r'[^\w\-_.]', '_', filename)
         filename = filename.replace('..', '_')
         return filename[:255]
 
