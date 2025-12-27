@@ -200,14 +200,15 @@ Security and Download Improvements
 
 
 class SecurityError(Exception):
+    """Exception raised for security-related errors"""
     pass
-
 
 class DownloadError(Exception):
+    """Exception raised for download-related errors"""
     pass
 
-
 class APIError(Exception):
+    """Exception raised for API-related errors"""
     pass
 
 
@@ -242,11 +243,11 @@ class SecurityManager:
     @staticmethod
     def sanitize_filename(filename):
         """Sanitize filenames to prevent path traversal"""
-        import re
+        from re import sub
         # Remove path components and special characters
         filename = re.sub(r'[^\w\-_.]', '_', filename)
         filename = filename.replace('..', '_')
-        return filename[:255]  # Limit length
+        return filename[:255]
 
     @staticmethod
     def verify_file_integrity(file_path, expected_size=None):
@@ -332,7 +333,7 @@ class SecureAPIClient:
     def safe_api_request(self, url, params=None):
         """Make API request with security measures"""
         if not SecurityManager.validate_url(url):
-            raise ValueError("Invalid URL")
+            raise SecurityError("Invalid URL")
 
         try:
             response = self.session.get(
@@ -347,27 +348,30 @@ class SecureAPIClient:
 
             if response.status_code != 200:
                 logger.error(f"API request failed: {response.status_code}")
-                raise Exception("API request failed")
+                raise APIError(f"API request failed with status code: {response.status_code}")
 
             # Validate JSON response
             data = response.json()
             if not isinstance(data, (list, dict)):
-                raise ValueError("Invalid API response format")
+                raise APIError("Invalid API response format")
 
             return data
 
         except requests.exceptions.SSLError as e:
             logger.error(f"SSL error: {e}")
-            raise Exception("SSL verification failed")
+            raise SecurityError(f"SSL verification failed: {e}")
         except requests.exceptions.Timeout:
             logger.error("API request timeout")
-            raise Exception("Request timeout")
+            raise DownloadError("Request timeout")
         except requests.exceptions.ConnectionError:
             logger.error("Connection error")
-            raise Exception("Connection failed")
+            raise DownloadError("Connection failed")
         except ValueError as e:
             logger.error(f"Invalid JSON response: {e}")
-            raise Exception("Invalid API response")
+            raise APIError(f"Invalid API response: {e}")
+        except Exception as e:
+            logger.error(f"Unexpected error: {e}")
+            raise APIError(f"Unexpected error during API request: {e}")
 
 
 class SecureCacheManager:
@@ -1162,19 +1166,16 @@ class DetailScreen(Screen):
         if mt == "video":
             logger.info("for video")
             self.play_video()
-            return
 
         elif mt == "gif":
             url = self.data.get("hdurl") or self.data.get("url")
             logger.info("for gif " + str(self.data.get("date")) + ": " + str(url))
             self.show_animated_gif(url)
-            return
 
         elif mt == "image":
             lowres_url = self.data.get("url")  # low resolution URL
             logger.info("for image: " + str(lowres_url))
             self.load_image(lowres_url, force=True)
-            return
 
         else:
             self.close()
@@ -1254,8 +1255,10 @@ class DetailScreen(Screen):
             if fn.startswith(("apod_vid_", "apod_aud_", "apod_out_")):
                 try:
                     remove(join(CACHE_DIR, fn))
-                except:
-                    pass
+                except OSError as e:
+                    logger.warning(f"Failed to remove temporary file {fn}: {e}")
+                except Exception as e:
+                    logger.error(f"Unexpected error removing file {fn}: {e}")
 
     def show_info(self):
         """Show detailed info"""
@@ -1325,7 +1328,7 @@ def main(session, **kwargs):
         session.open(APODConfigScreen)
 
 
-def Plugins(**kwargs):
+def plugins(**kwargs):
     return [PluginDescriptor(
         name="NASA APOD Viewer",
         description=_(title_plug),
@@ -1333,3 +1336,6 @@ def Plugins(**kwargs):
         icon='logo.png',
         fnc=main
     )]
+
+
+Plugins = plugins
