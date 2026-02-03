@@ -190,9 +190,11 @@ class SecurityError(Exception):
     """Exception raised for security-related errors"""
     pass
 
+
 class DownloadError(Exception):
     """Exception raised for download-related errors"""
     pass
+
 
 class APIError(Exception):
     """Exception raised for API-related errors"""
@@ -244,8 +246,13 @@ class SecurityManager:
                 return False
 
             file_size = getsize(file_path)
-            if expected_size and abs(file_size - expected_size) > 1024:  # 1KB tolerance
-                logger.warning("File size mismatch: " + str(file_size) + " vs " + str(expected_size))
+            if expected_size and abs(
+                    file_size - expected_size) > 1024:  # 1KB tolerance
+                logger.warning(
+                    "File size mismatch: " +
+                    str(file_size) +
+                    " vs " +
+                    str(expected_size))
                 return False
 
             # Basic file type verification for images
@@ -294,7 +301,8 @@ class APIKeyManager:
                 if exists(key_file):
                     with open(key_file, 'r') as f:
                         key = f.read().strip()
-                        logger.info("Found API key file at: {}".format(key_file))
+                        logger.info(
+                            "Found API key file at: {}".format(key_file))
                         logger.info("Key length: {}".format(len(key)))
 
                         if APIKeyManager.is_valid_api_key(key):
@@ -335,7 +343,9 @@ class SecureAPIClient:
 
             if response.status_code != 200:
                 logger.error(f"API request failed: {response.status_code}")
-                raise APIError(f"API request failed with status code: {response.status_code}")
+                raise APIError(
+                    f"API request failed with status code: {
+                        response.status_code}")
 
             # Validate JSON response
             data = response.json()
@@ -406,7 +416,11 @@ class SecureCacheManager:
                     total_size -= size
                     logger.info("Cleaned cache file: " + basename(oldest_path))
                 except Exception as e:
-                    logger.error("Failed to remove " + str(oldest_path) + ": " + str(e))
+                    logger.error(
+                        "Failed to remove " +
+                        str(oldest_path) +
+                        ": " +
+                        str(e))
 
         except Exception as e:
             logger.error("Cache cleanup failed: " + str(e))
@@ -418,7 +432,7 @@ class SecureCacheManager:
             if any(pattern in f for pattern in sensitive_patterns):
                 try:
                     remove(join(self.cache_dir, f))
-                except:
+                except BaseException:
                     pass
 
 
@@ -435,7 +449,10 @@ class AdvancedDownloadManager:
             errback(Exception("URL validation failed"))
             return
 
-        safe_path = join(CACHE_DIR, SecurityManager.sanitize_filename(basename(local_path)))
+        safe_path = join(
+            CACHE_DIR,
+            SecurityManager.sanitize_filename(
+                basename(local_path)))
 
         if exists(safe_path):
             callback(safe_path)
@@ -456,7 +473,7 @@ class AdvancedDownloadManager:
                 # Remove corrupted file
                 try:
                     remove(safe_path)
-                except:
+                except BaseException:
                     pass
                 errback(Exception("File integrity check failed"))
             self.process_queue()
@@ -590,11 +607,16 @@ class SplashScreen(Screen):
     def load_apod(self):
         try:
             api_key = config.plugins.apod.api_key.value
-            url = "https://api.nasa.gov/planetary/apod?api_key={}".format(api_key)
+            url = "https://api.nasa.gov/planetary/apod?api_key={}".format(
+                api_key)
             response = requests.get(url, timeout=10)
             data = response.json()
 
-            logger.info("APOD API response: {}".format(data.get("title", "No title")))
+            logger.info(
+                "APOD API response: {}".format(
+                    data.get(
+                        "title",
+                        "No title")))
 
             if data.get("media_type") != "image":
                 raise ValueError("Today's APOD is not an image")
@@ -624,7 +646,9 @@ class SplashScreen(Screen):
             with open(temp_path, "wb") as f:
                 copyfileobj(img_response.raw, f)
 
-            logger.info("File saved, size: {} bytes".format(getsize(temp_path)))
+            logger.info(
+                "File saved, size: {} bytes".format(
+                    getsize(temp_path)))
             return data
 
         except Exception as e:
@@ -643,7 +667,7 @@ class SplashScreen(Screen):
         try:
             cache_files = listdir(CACHE_DIR)
             logger.info("Files in cache: {}".format(cache_files))
-        except:
+        except BaseException:
             pass
 
         image_path = None
@@ -686,10 +710,14 @@ class SplashScreen(Screen):
                     f.write(r.content)
                 self["image"].instance.setPixmapFromFile(TMP_IMG_JPG)
             else:
-                self["text"].setText(_("Failed to fetch image: HTTP {}").format(r.status_code))
+                self["text"].setText(
+                    _("Failed to fetch image: HTTP {}").format(
+                        r.status_code))
         except Exception as e:
             logger.exception("Error downloading splash image {}".format(e))
-            self["text"].setText(_("Error downloading image: {}").format(str(e)))
+            self["text"].setText(
+                _("Error downloading image: {}").format(
+                    str(e)))
 
     def show_list(self):
         """Open the ArchiveScreen and close this splash."""
@@ -780,7 +808,8 @@ class ArchiveScreen(Screen):
                     logger.info("Loaded icon: {}".format(filename))
                     return pixmap
                 else:
-                    logger.warning("Failed to load pixmap: {}".format(filename))
+                    logger.warning(
+                        "Failed to load pixmap: {}".format(filename))
 
             # Fallback
             fallback = join(plugin_path, "res", "icons", "icon_unknown.png")
@@ -800,7 +829,7 @@ class ArchiveScreen(Screen):
             if exists(TMP_JSON):
                 remove(TMP_JSON)
                 logger.info("Cleared old cache file")
-        except:
+        except BaseException:
             pass
 
         self["status"].setText(_("Loading fresh APOD data..."))
@@ -815,7 +844,8 @@ class ArchiveScreen(Screen):
             count = config.plugins.apod.count.value
             api_key = config.plugins.apod.api_key.value
 
-            logger.info("Fetching fresh data - Count: {}, API Key: {}".format(count, api_key[:8] + "..." if api_key else "None"))
+            logger.info("Fetching fresh data - Count: {}, API Key: {}".format(count,
+                        api_key[:8] + "..." if api_key else "None"))
 
             if not APIKeyManager.is_valid_api_key(api_key):
                 logger.error("Invalid API key")
@@ -830,7 +860,9 @@ class ArchiveScreen(Screen):
 
             if response.status_code == 200:
                 data = response.json()
-                logger.info("Success! Received {} fresh entries".format(len(data) if data else 0))
+                logger.info(
+                    "Success! Received {} fresh entries".format(
+                        len(data) if data else 0))
 
                 if data:
                     first = data[0]
@@ -848,7 +880,8 @@ class ArchiveScreen(Screen):
 
                 return data
             else:
-                logger.error("API error {}: {}".format(response.status_code, response.text[:200]))
+                logger.error("API error {}: {}".format(
+                    response.status_code, response.text[:200]))
                 return []
 
         except Exception as e:
@@ -902,7 +935,9 @@ class ArchiveScreen(Screen):
             return
 
         sort_order = config.plugins.apod.sort_order.value
-        logger.info("Building list with {} entries, sort order: {}".format(len(data), sort_order))
+        logger.info(
+            "Building list with {} entries, sort order: {}".format(
+                len(data), sort_order))
 
         try:
             if sort_order == "Ascending":
@@ -937,7 +972,9 @@ class ArchiveScreen(Screen):
 
             logger.info("Built list with {} entries".format(len(list_items)))
             self["list"].setList(list_items)
-            self["status"].setText(_("Found {} entries").format(len(list_items)))
+            self["status"].setText(
+                _("Found {} entries").format(
+                    len(list_items)))
 
         except Exception as e:
             logger.error("Build list failed: {}".format(e))
@@ -961,7 +998,10 @@ class ArchiveScreen(Screen):
             entry = self.raw_data[idx]
             title = entry.get("title", "No Title")
             explanation = entry.get("explanation", "No Description")
-            self.session.open(MessageBox, f"Title: {title}\n\nExplanation:\n{explanation}", MessageBox.TYPE_INFO)
+            self.session.open(
+                MessageBox,
+                f"Title: {title}\n\nExplanation:\n{explanation}",
+                MessageBox.TYPE_INFO)
 
     def search_apod(self):
         self.session.openWithCallback(
@@ -975,7 +1015,9 @@ class ArchiveScreen(Screen):
         if not result:
             return
         term = result.lower()
-        self.filtered_data = [e for e in self.raw_data if term in e.get("title", "").lower()]
+        self.filtered_data = [
+            e for e in self.raw_data if term in e.get(
+                "title", "").lower()]
         self.search_active = True
         self.build_list(self.filtered_data)
         self["status"].setText(_(f"Search results: {len(self.filtered_data)}"))
@@ -1007,7 +1049,8 @@ class ArchiveScreen(Screen):
         if self.search_active:
             self.search_active = False
             self.build_list(self.raw_data)
-            self["status"].setText(_("Found " + str(len(self.raw_data)) + " entries"))
+            self["status"].setText(
+                _("Found " + str(len(self.raw_data)) + " entries"))
         else:
             self.clean_cache()
             self.close()
@@ -1156,7 +1199,10 @@ class DetailScreen(Screen):
 
         elif mt == "gif":
             url = self.data.get("hdurl") or self.data.get("url")
-            logger.info("for gif " + str(self.data.get("date")) + ": " + str(url))
+            logger.info("for gif " +
+                        str(self.data.get("date")) +
+                        ": " +
+                        str(url))
             self.show_animated_gif(url)
 
         elif mt == "image":
@@ -1177,7 +1223,10 @@ class DetailScreen(Screen):
         # extract ID YouTube
         m = search(r"(?:v=|youtu\.be/|embed/)([\w-]+)", url)
         if not m:
-            return self.session.open(MessageBox, _("Unsupported video URL"), MessageBox.TYPE_INFO)
+            return self.session.open(
+                MessageBox,
+                _("Unsupported video URL"),
+                MessageBox.TYPE_INFO)
         vid = m.group(1)
 
         logger.debug(f"play_video vid video():  {vid}")
@@ -1186,7 +1235,10 @@ class DetailScreen(Screen):
             try:
                 from youtube_dl import YoutubeDL
             except ImportError:
-                self.session.open(MessageBox, 'Please install "YoutubeDL" plugin!', MessageBox.TYPE_ERROR)
+                self.session.open(
+                    MessageBox,
+                    'Please install "YoutubeDL" plugin!',
+                    MessageBox.TYPE_ERROR)
                 return
 
             try:
@@ -1207,10 +1259,16 @@ class DetailScreen(Screen):
 
             except Exception as e:
                 logger.error("Video playback error: {}".format(e))
-                self.session.open(MessageBox, _("Video playback failed"), MessageBox.TYPE_INFO)
+                self.session.open(
+                    MessageBox,
+                    _("Video playback failed"),
+                    MessageBox.TYPE_INFO)
         except Exception as e:
             logger.exception("Error in play_video(): %s", e)
-            self.session.open(MessageBox, _("Video playback failed"), MessageBox.TYPE_INFO)
+            self.session.open(
+                MessageBox,
+                _("Video playback failed"),
+                MessageBox.TYPE_INFO)
 
     def show_animated_gif(self, url):
         try:
@@ -1243,7 +1301,8 @@ class DetailScreen(Screen):
                 try:
                     remove(join(CACHE_DIR, fn))
                 except OSError as e:
-                    logger.warning(f"Failed to remove temporary file {fn}: {e}")
+                    logger.warning(
+                        f"Failed to remove temporary file {fn}: {e}")
                 except Exception as e:
                     logger.error(f"Unexpected error removing file {fn}: {e}")
 
@@ -1304,7 +1363,9 @@ def main(session, **kwargs):
 
     logger.info("Key loaded from file: {}".format(key_loaded))
     logger.info("Final API key: {}".format(api_key))
-    logger.info("Final API key length: {}".format(len(api_key) if api_key else 0))
+    logger.info(
+        "Final API key length: {}".format(
+            len(api_key) if api_key else 0))
     logger.info("Is valid: {}".format(is_valid))
 
     if is_valid:

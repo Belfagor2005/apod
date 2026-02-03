@@ -31,9 +31,15 @@ def _get_thumbs(data):
     global video_thumb
     if "youtube" in data or "youtu.be" in data:
         # get ID from YouTube URL
-        youtube_id_regex = re.compile(r"(?:(?<=(v|V)/)|(?<=be/)|(?<=(\?|\&)v=)|(?<=embed/))([\w-]+)")
+        youtube_id_regex = re.compile(
+            r"(?:(?<=(v|V)/)|(?<=be/)|(?<=(\?|\&)v=)|(?<=embed/))([\w-]+)")
         video_id = youtube_id_regex.findall(data)
-        video_id = ''.join(''.join(elements) for elements in video_id).replace("?", "").replace("&", "")
+        video_id = ''.join(
+            ''.join(elements) for elements in video_id).replace(
+            "?",
+            "").replace(
+            "&",
+            "")
         # get URL of thumbnail
         video_thumb = "https://img.youtube.com/vi/" + video_id + "/0.jpg"
     elif "vimeo" in data:
@@ -41,17 +47,23 @@ def _get_thumbs(data):
         vimeo_id_regex = re.compile(r"(?:/video/)(\d+)")
         vimeo_id = vimeo_id_regex.findall(data)[0]
         # make an API call to get thumbnail URL
-        vimeo_request = http.request("GET", "https://vimeo.com/api/v2/video/" + vimeo_id + ".json")
+        vimeo_request = http.request(
+            "GET",
+            "https://vimeo.com/api/v2/video/" +
+            vimeo_id +
+            ".json")
         data = json.loads(vimeo_request.data.decode('utf-8'))
         video_thumb = data[0]['thumbnail_large']
     else:
-        # the thumbs parameter is True, but the APOD for the date is not a video, output nothing
+        # the thumbs parameter is True, but the APOD for the date is not a
+        # video, output nothing
         video_thumb = ""
 
     return video_thumb
 
 
-# function that returns only last URL if there are multiple URLs stacked together
+# function that returns only last URL if there are multiple URLs stacked
+# together
 def _get_last_url(data):
     regex = re.compile("(?:.(?!http[s]?://))+$")
     return regex.findall(data)[0]
@@ -65,11 +77,11 @@ def parse_apod_lxml(response_text, dt=None):
         'title': tree.xpath('//b[contains(., " Explanation:")]/preceding::b[1]/text()')[0].strip(),
         'explanation': tree.xpath('//b[contains(., " Explanation:")]/following::text()[1]')[0].strip(),
         'date': dt.strftime('%Y-%m-%d') if dt else tree.xpath('//center/p[2]/text()')[0].strip(),
-        'url': tree.xpath('//img/@src | //iframe/@src')[0]
-    }
+        'url': tree.xpath('//img/@src | //iframe/@src')[0]}
 
     # Gestione copyright complessa
-    copyright_text = tree.xpath('//a[contains(text(), "Credit")]/following-sibling::text()')
+    copyright_text = tree.xpath(
+        '//a[contains(text(), "Credit")]/following-sibling::text()')
     if copyright_text:
         props['copyright'] = copyright_text[0].strip(' ,')
 
@@ -301,8 +313,9 @@ def _date(soup):
                          'september', 'october', 'november', 'december'
                          ].index(month.lower()) + 1
                 day = int(day)
-                return datetime.date(year=year, month=month, day=day).strftime('%Y-%m-%d')
-            except:
+                return datetime.date(
+                    year=year, month=month, day=day).strftime('%Y-%m-%d')
+            except BaseException:
                 LOG.debug('unable to retrieve date from line: ' + line)
     raise Exception('Date not found in soup data.')
 
