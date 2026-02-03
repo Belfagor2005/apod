@@ -16,72 +16,112 @@ msgstr ""
 "X-Poedit-SourceCharset: iso-8859-1\n"
 "X-Poedit-SearchPath-0: plugin.py\n"
 
-#: plugin.py:244
 msgid "APOD Plugin Settings"
 msgstr ""
 
-#: plugin.py:246
-msgid "Save"
+msgid "Cancel"
 msgstr ""
 
-#: plugin.py:247
-msgid "Close"
-msgstr ""
-
-#: plugin.py:249
-msgid "NASA API Key:"
-msgstr ""
-
-#: plugin.py:250
-msgid "Number of APODs to fetch:"
-msgstr ""
-
-#: plugin.py:294
-msgid "Loading Astronomy Picture of the Day..."
-msgstr ""
-
-#: plugin.py:311
-msgid "Invalid API Key! Please configure a valid NASA API key."
-msgstr ""
-
-#: plugin.py:385
-#, python-format
-msgid "Error: %s"
-msgstr ""
-
-#: plugin.py:403
-msgid "No image URL found."
-msgstr ""
-
-#: plugin.py:421
-#, python-format
-msgid "Failed to fetch image: HTTP %d"
-msgstr ""
-
-#: plugin.py:424
-#, fuzzy, python-format
-#| msgid ""
-#| "\n"
-#| "\n"
-#| "Errore nel download degli aggiornamenti !"
-msgid "Error downloading image: %s"
+#, fuzzy
+msgid "Error building list"
 msgstr ""
 "\n"
 "\n"
 "Error downloading updates!"
 
-#: plugin.py:475
+#, fuzzy
+msgid "Error displaying image"
+msgstr ""
+"\n"
+"\n"
+"Error downloading updates!"
+
+#, fuzzy
+msgid "Error downloading image: {}"
+msgstr ""
+"\n"
+"\n"
+"Error downloading updates!"
+
+#, fuzzy
+msgid "Error loading data"
+msgstr ""
+"\n"
+"\n"
+"Error downloading updates!"
+
+msgid "Error loading data. Try later."
+msgstr ""
+
+#, fuzzy
+msgid "Failed to download image"
+msgstr ""
+"\n"
+"\n"
+"Error downloading updates!"
+
+msgid "Failed to fetch image: HTTP {}"
+msgstr ""
+
+msgid "Failed to load APOD"
+msgstr ""
+
+msgid "Failed to load image."
+msgstr ""
+
+msgid "Found"
+msgstr ""
+
+msgid "Found {} entries"
+msgstr ""
+
+msgid "Image not available"
+msgstr ""
+
+msgid "Invalid API Key! Please configure a valid NASA API key."
+msgstr ""
+
+msgid "Loading Astronomy Picture of the Day..."
+msgstr ""
+
+msgid "Loading fresh APOD data..."
+msgstr ""
+
+msgid "Loading image..."
+msgstr ""
+
 msgid "Loading..."
 msgstr ""
 
-#: plugin.py:602
+msgid "NASA API Key:"
+msgstr ""
+
+msgid "No data available. Check API key."
+msgstr ""
+
+msgid "No image URL available"
+msgstr ""
+
+msgid "Number of APODs to fetch:"
+msgstr ""
+
+msgid "Press OK to play video"
+msgstr ""
+
+msgid "Save"
+msgstr ""
+
+msgid "Search results: {len(self.filtered_data)}"
+msgstr ""
+
 msgid "Search..."
 msgstr ""
 
-#: plugin.py:696
-msgid "Wait please..."
+msgid "Sort order:"
 msgstr ""
 
-#: plugin.py:752
-msgid "Failed to load image."
+msgid "Unsupported video URL"
+msgstr ""
+
+msgid "Video playback failed"
 msgstr ""

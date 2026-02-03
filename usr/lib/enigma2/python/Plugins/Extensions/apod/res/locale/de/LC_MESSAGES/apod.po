@@ -17,81 +17,111 @@ msgstr ""
 "X-Poedit-SourceCharset: iso-8859-1\n"
 "X-Poedit-SearchPath-0: plugin.py\n"
 
-#: plugin.py:242
 msgid "APOD Plugin Settings"
 msgstr "APOD-Plugin-Einstellungen"
 
-#: plugin.py:244
-msgid "Save"
-msgstr "Speichern"
+msgid "Cancel"
+msgstr ""
 
-#: plugin.py:245
-msgid "Close"
-msgstr "Schließen"
-
-#: plugin.py:247
-msgid "NASA API Key:"
-msgstr "NASA API Schlüssel:"
-
-#: plugin.py:248
-msgid "Number of APODs to fetch:"
-msgstr "Anzahl der abzurufenden APODs:"
-
-#: plugin.py:292
-msgid "Loading Astronomy Picture of the Day..."
-msgstr "Astronomisches Bild des Tages laden..."
-
-#: plugin.py:309
-msgid "Invalid API Key! Please configure a valid NASA API key."
-msgstr "Ungültiger API-Schlüssel! Bitte konfiguriere einen gültigen NASA API Schlüssel."
-
-#: plugin.py:353
-#, python-format
-msgid "Error: %s"
-msgstr "Fehler: %s"
-
-#: plugin.py:376
-msgid "No image URL found."
-msgstr "Keine Bild URL gefunden."
-
-#: plugin.py:394
-#, python-format
-msgid "Failed to fetch image: HTTP %d"
-msgstr "Das Bild konnte nicht abgerufen werden: HTTP %d"
-
-#: plugin.py:397
-#, python-format
-msgid "Error downloading image: %s"
+#, fuzzy
+msgid "Error building list"
 msgstr "Fehler beim Herunterladen des Bildes: %s"
 
-#: plugin.py:451
-msgid "Loading..."
-msgstr "Lade..."
+#, fuzzy
+msgid "Error displaying image"
+msgstr "Fehler beim Herunterladen des Bildes: %s"
 
-#: plugin.py:564
+#, fuzzy
+msgid "Error downloading image: {}"
+msgstr "Fehler beim Herunterladen des Bildes: %s"
+
+#, fuzzy
+msgid "Error loading data"
+msgstr "Fehler beim Laden der Daten. Später versuchen."
+
 msgid "Error loading data. Try later."
 msgstr "Fehler beim Laden der Daten. Später versuchen."
 
-#: plugin.py:625
-msgid "Search..."
-msgstr "Suche..."
+#, fuzzy
+msgid "Failed to download image"
+msgstr "Bild kann nicht geladen werden."
 
-#: plugin.py:724
+#, fuzzy
+msgid "Failed to fetch image: HTTP {}"
+msgstr "Das Bild konnte nicht abgerufen werden: HTTP %d"
+
+#, fuzzy
+msgid "Failed to load APOD"
+msgstr "Bild kann nicht geladen werden."
+
+msgid "Failed to load image."
+msgstr "Bild kann nicht geladen werden."
+
+msgid "Found"
+msgstr ""
+
+msgid "Found {} entries"
+msgstr ""
+
+msgid "Image not available"
+msgstr ""
+
+msgid "Invalid API Key! Please configure a valid NASA API key."
+msgstr "Ungültiger API-Schlüssel! Bitte konfiguriere einen gültigen NASA API Schlüssel."
+
+msgid "Loading Astronomy Picture of the Day..."
+msgstr "Astronomisches Bild des Tages laden..."
+
+msgid "Loading fresh APOD data..."
+msgstr ""
+
+#, fuzzy
+msgid "Loading image..."
+msgstr "Lade..."
+
+msgid "Loading..."
+msgstr "Lade..."
+
+msgid "NASA API Key:"
+msgstr "NASA API Schlüssel:"
+
+msgid "No data available. Check API key."
+msgstr ""
+
+#, fuzzy
+msgid "No image URL available"
+msgstr "Keine Bild URL gefunden."
+
+msgid "Number of APODs to fetch:"
+msgstr "Anzahl der abzurufenden APODs:"
+
 msgid "Press OK to play video"
 msgstr "Drücke OK, zum Video abspielen"
 
-#: plugin.py:767
-msgid "Wait please..."
-msgstr "Bitte warten..."
+msgid "Save"
+msgstr "Speichern"
 
-#: plugin.py:829
+msgid "Search results: {len(self.filtered_data)}"
+msgstr ""
+
+msgid "Search..."
+msgstr "Suche..."
+
+msgid "Sort order:"
+msgstr ""
+
 msgid "Unsupported video URL"
 msgstr "Nicht unterstützte Video-URL"
 
-#: plugin.py:859 plugin.py:862
 msgid "Video playback failed"
 msgstr "Videowiedergabe fehlgeschlagen"
 
-#: plugin.py:907
-msgid "Failed to load image."
-msgstr "Bild kann nicht geladen werden."
+#~ msgid "Close"
+#~ msgstr "Schließen"
+
+#, python-format
+#~ msgid "Error: %s"
+#~ msgstr "Fehler: %s"
+
+#~ msgid "Wait please..."
+#~ msgstr "Bitte warten..."

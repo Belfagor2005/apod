@@ -16,124 +16,96 @@ msgstr ""
 "X-Poedit-SourceCharset: iso-8859-1\n"
 "X-Poedit-SearchPath-0: plugin.py\n"
 
-#: plugin.py:508 plugin.py:509
 msgid "APOD Plugin Settings"
 msgstr ""
 
-#: plugin.py:510
-msgid "Save"
-msgstr "Salva"
-
-#: plugin.py:511
 msgid "Cancel"
 msgstr "Annulla"
 
-#: plugin.py:514
-msgid "NASA API Key:"
-msgstr ""
-
-#: plugin.py:515
-msgid "Number of APODs to fetch:"
-msgstr "Numero di APOD da recuperare:"
-
-#: plugin.py:516
-msgid "Sort order:"
-msgstr "Ordine di ordinamento:"
-
-#: plugin.py:571
-msgid "Loading Astronomy Picture of the Day..."
-msgstr "Caricamento dell'Immagine Astronomica del Giorno..."
-
-#: plugin.py:590
-msgid "Invalid API Key! Please configure a valid NASA API key."
-msgstr "Chiave API non valida! Configura una chiave API NASA valida."
-
-#: plugin.py:644
-msgid "Failed to load APOD"
-msgstr "Impossibile caricare APOD"
-
-#: plugin.py:697
-#, python-brace-format
-msgid "Failed to fetch image: HTTP {}"
-msgstr "Impossibile recuperare l'immagine: HTTP {}"
-
-#: plugin.py:700
-#, python-brace-format
-msgid "Error downloading image: {}"
-msgstr "Errore durante il download dell'immagine: {}"
-
-#: plugin.py:753
-msgid "Loading..."
-msgstr "Caricamento..."
-
-#: plugin.py:814
-msgid "Loading fresh APOD data..."
-msgstr "Caricamento dati APOD aggiornati..."
-
-#: plugin.py:875
-msgid "No data available. Check API key."
-msgstr "Nessun dato disponibile. Controlla la chiave API."
-
-#: plugin.py:887
-msgid "Error loading data"
-msgstr "Errore durante il caricamento dei dati"
-
-#: plugin.py:908
-msgid "Error loading data. Try later."
-msgstr "Errore durante il caricamento dei dati. Riprova più tardi."
-
-#: plugin.py:948
-#, python-brace-format
-msgid "Found {} entries"
-msgstr "Trovato {} voci"
-
-#: plugin.py:952
 msgid "Error building list"
 msgstr "Errore durante la creazione dell'elenco"
 
-#: plugin.py:978
-msgid "Search..."
-msgstr "Cerca..."
-
-#: plugin.py:1018
-msgid "Found "
-msgstr "Trovato "
-
-#: plugin.py:1084
-msgid "Press OK to play video"
-msgstr "Premere OK per riprodurre il video"
-
-#: plugin.py:1095
-msgid "Loading image..."
-msgstr "Caricamento immagine in corso..."
-
-#: plugin.py:1099
-msgid "No image URL available"
-msgstr "Nessun URL immagine trovato"
-
-#: plugin.py:1144
 msgid "Error displaying image"
 msgstr "Errore durante la visualizzazione dell'immagine"
 
-#: plugin.py:1147
-msgid "Image not available"
-msgstr "Immagine non disponibile"
+msgid "Error downloading image: {}"
+msgstr "Errore durante il download dell'immagine: {}"
 
-#: plugin.py:1152
+msgid "Error loading data"
+msgstr "Errore durante il caricamento dei dati"
+
+msgid "Error loading data. Try later."
+msgstr "Errore durante il caricamento dei dati. Riprova più tardi."
+
 msgid "Failed to download image"
 msgstr "Impossibile scaricare l'immagine"
 
-#: plugin.py:1190
+msgid "Failed to fetch image: HTTP {}"
+msgstr "Impossibile recuperare l'immagine: HTTP {}"
+
+msgid "Failed to load APOD"
+msgstr "Impossibile caricare APOD"
+
+msgid "Failed to load image."
+msgstr "Impossibile caricare l'immagine."
+
+#, fuzzy
+msgid "Found"
+msgstr "Trovato "
+
+msgid "Found {} entries"
+msgstr "Trovato {} voci"
+
+msgid "Image not available"
+msgstr "Immagine non disponibile"
+
+msgid "Invalid API Key! Please configure a valid NASA API key."
+msgstr "Chiave API non valida! Configura una chiave API NASA valida."
+
+msgid "Loading Astronomy Picture of the Day..."
+msgstr "Caricamento dell'Immagine Astronomica del Giorno..."
+
+msgid "Loading fresh APOD data..."
+msgstr "Caricamento dati APOD aggiornati..."
+
+msgid "Loading image..."
+msgstr "Caricamento immagine in corso..."
+
+msgid "Loading..."
+msgstr "Caricamento..."
+
+msgid "NASA API Key:"
+msgstr ""
+
+msgid "No data available. Check API key."
+msgstr "Nessun dato disponibile. Controlla la chiave API."
+
+msgid "No image URL available"
+msgstr "Nessun URL immagine trovato"
+
+msgid "Number of APODs to fetch:"
+msgstr "Numero di APOD da recuperare:"
+
+msgid "Press OK to play video"
+msgstr "Premere OK per riprodurre il video"
+
+msgid "Save"
+msgstr "Salva"
+
+msgid "Search results: {len(self.filtered_data)}"
+msgstr ""
+
+msgid "Search..."
+msgstr "Cerca..."
+
+msgid "Sort order:"
+msgstr "Ordine di ordinamento:"
+
 msgid "Unsupported video URL"
 msgstr "URL video non supportato"
 
-#: plugin.py:1220 plugin.py:1223
 msgid "Video playback failed"
 msgstr "Riproduzione video non riuscita"
-
-#: plugin.py:1271
-msgid "Failed to load image."
-msgstr "Impossibile caricare l'immagine."
 
 #~ msgid "Close"
 #~ msgstr "Esci"
