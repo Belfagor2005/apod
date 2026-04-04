@@ -70,7 +70,7 @@ from Plugins.Plugin import PluginDescriptor
 from Tools.Directories import fileExists
 from Tools.LoadPixmap import LoadPixmap
 
-from . import _
+from . import _, __version__
 
 screen_width = getDesktop(0).size().width()
 """
@@ -122,8 +122,7 @@ Once done, the plugin should be able to access NASA's APOD data and display the 
 """
 
 
-currversion = '1.8'
-title_plug = 'Picture of The Day - Nasa %s by %s' % (currversion, __author__)
+title_plug = 'Picture of The Day - Nasa %s by %s' % (__version__, __author__)
 plugin_path = '/usr/lib/enigma2/python/Plugins/Extensions/apod'
 CACHE_DIR = "/tmp/apod_cache/"
 
