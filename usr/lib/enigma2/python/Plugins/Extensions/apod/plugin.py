@@ -1,41 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 
-"""
-#########################################################
-#                                                       #
-#  APOD - Astronomy Picture of the Day Plugin           #
-#  Version: 1.7                                         #
-#  Created by Lululla (https://github.com/Belfagor2005) #
-#  License: CC BY-NC-SA 4.0                             #
-#  https://creativecommons.org/licenses/by-nc-sa/4.0    #
-#  Last Modified: "16:45 - 20251122"                    #
-#                                                       #
-#  Credits:                                             #
-#  - Original concept by Lululla                        #
-#  - API integration with                               #
-#    NASA's Astronomy Picture of the Day API            #
-#  - Image downloader                                   #
-#  - Image display and handling                         #
-#  - Data caching system                                #
-#  - Custom settings configuration                      #
-#  - Advanced error logging                             #
-#  - User interface and display components              #
-#  - Security enhancements & URL validation             #
-#  - Multi-format image support (JPG/PNG/GIF/TIFF)      #
-#  - Animated GIF support                               #
-#  - YouTube video playback                             #
-#  - Smart cache management                             #
-#  - API key file management                            #
-#                                                       #
-#  Usage of this code without proper attribution        #
-#  is strictly prohibited.                              #
-#  For modifications and redistribution,                #
-#  please maintain this credit header.                  #
-#########################################################
-"""
-__author__ = "Lululla"
-
 from datetime import date
 import logging
 from json import dump as json_dump, load as json_load
@@ -71,6 +36,40 @@ from Tools.Directories import fileExists
 from Tools.LoadPixmap import LoadPixmap
 
 from . import _, __version__
+"""
+#########################################################
+#                                                       #
+#  APOD - Astronomy Picture of the Day Plugin           #
+#  Version: 1.7                                         #
+#  Created by Lululla (https://github.com/Belfagor2005) #
+#  License: CC BY-NC-SA 4.0                             #
+#  https://creativecommons.org/licenses/by-nc-sa/4.0    #
+#  Last Modified: "16:45 - 20251122"                    #
+#                                                       #
+#  Credits:                                             #
+#  - Original concept by Lululla                        #
+#  - API integration with                               #
+#    NASA's Astronomy Picture of the Day API            #
+#  - Image downloader                                   #
+#  - Image display and handling                         #
+#  - Data caching system                                #
+#  - Custom settings configuration                      #
+#  - Advanced error logging                             #
+#  - User interface and display components              #
+#  - Security enhancements & URL validation             #
+#  - Multi-format image support (JPG/PNG/GIF/TIFF)      #
+#  - Animated GIF support                               #
+#  - YouTube video playback                             #
+#  - Smart cache management                             #
+#  - API key file management                            #
+#                                                       #
+#  Usage of this code without proper attribution        #
+#  is strictly prohibited.                              #
+#  For modifications and redistribution,                #
+#  please maintain this credit header.                  #
+#########################################################
+"""
+__author__ = "Lululla"
 
 screen_width = getDesktop(0).size().width()
 """
@@ -221,7 +220,7 @@ class SecurityManager:
 
             domain = parsed.netloc.lower()
             if not any(allowed in domain for allowed in allowed_domains):
-                logger.warning(f"Blocked unauthorized domain: {domain}")
+                logger.warning("Blocked unauthorized domain: {}".format(domain))
                 return False
 
             return True
@@ -341,10 +340,10 @@ class SecureAPIClient:
             )
 
             if response.status_code != 200:
-                logger.error(f"API request failed: {response.status_code}")
+                logger.error("API request failed: {}".format(response.status_code))
                 raise APIError(
-                    f"API request failed with status code: {
-                        response.status_code}")
+                    "API request failed with status code: {}".format(response.status_code)
+                )
 
             # Validate JSON response
             data = response.json()
@@ -354,20 +353,24 @@ class SecureAPIClient:
             return data
 
         except requests.exceptions.SSLError as e:
-            logger.error(f"SSL error: {e}")
-            raise SecurityError(f"SSL verification failed: {e}")
+            logger.error("SSL error: {}".format(e))
+            raise SecurityError("SSL verification failed: {}".format(e))
+
         except requests.exceptions.Timeout:
             logger.error("API request timeout")
             raise DownloadError("Request timeout")
+
         except requests.exceptions.ConnectionError:
             logger.error("Connection error")
             raise DownloadError("Connection failed")
+
         except ValueError as e:
-            logger.error(f"Invalid JSON response: {e}")
-            raise APIError(f"Invalid API response: {e}")
+            logger.error("Invalid JSON response: {}".format(e))
+            raise APIError("Invalid API response: {}".format(e))
+
         except Exception as e:
-            logger.error(f"Unexpected error: {e}")
-            raise APIError(f"Unexpected error during API request: {e}")
+            logger.error("Unexpected error: {}".format(e))
+            raise APIError("Unexpected error during API request: {}".format(e))
 
 
 class SecureCacheManager:
@@ -479,7 +482,7 @@ class AdvancedDownloadManager:
 
         def on_failure(failure):
             self.concurrent_downloads -= 1
-            logger.error(f"Download failed: {failure}")
+            logger.error("Download failed: {}".format(failure))
             errback(failure)
             self.process_queue()
 
@@ -999,8 +1002,9 @@ class ArchiveScreen(Screen):
             explanation = entry.get("explanation", "No Description")
             self.session.open(
                 MessageBox,
-                f"Title: {title}\n\nExplanation:\n{explanation}",
-                MessageBox.TYPE_INFO)
+                "Title: {}\n\nExplanation:\n{}".format(title, explanation),
+                MessageBox.TYPE_INFO
+            )
 
     def search_apod(self):
         self.session.openWithCallback(
@@ -1019,7 +1023,7 @@ class ArchiveScreen(Screen):
                 "title", "").lower()]
         self.search_active = True
         self.build_list(self.filtered_data)
-        self["status"].setText(_(f"Search results: {len(self.filtered_data)}"))
+        self["status"].setText(_("Search results: {}".format(len(self.filtered_data))))
 
     def open_config(self):
         """
@@ -1062,7 +1066,7 @@ class ArchiveScreen(Screen):
                     remove(join(CACHE_DIR, f))
             logger.info("Cleaned media cache")
         except Exception as e:
-            logger.exception(f"Cache cleanup error: {e}")
+            logger.exception("Cache cleanup error: {}".format(e))
 
 
 class DetailScreen(Screen):
@@ -1228,7 +1232,7 @@ class DetailScreen(Screen):
                 MessageBox.TYPE_INFO)
         vid = m.group(1)
 
-        logger.debug(f"play_video vid video():  {vid}")
+        logger.debug("play_video vid video():  {}".format(vid))
 
         try:
             try:
@@ -1252,7 +1256,7 @@ class DetailScreen(Screen):
                     print("Here in Test url = %s" % video_url)
 
                 stream = eServiceReference(4097, 0, video_url)
-                logger.debug(f"Extracted video URL: {stream}")
+                logger.debug("Extracted video URL: {}".format(stream))
                 stream.setName(self.data.get('title', 'APOD Video'))
                 self.session.open(MoviePlayer, stream)
 
@@ -1301,9 +1305,10 @@ class DetailScreen(Screen):
                     remove(join(CACHE_DIR, fn))
                 except OSError as e:
                     logger.warning(
-                        f"Failed to remove temporary file {fn}: {e}")
+                        "Failed to remove temporary file {}: {}".format(fn, e))
                 except Exception as e:
-                    logger.error(f"Unexpected error removing file {fn}: {e}")
+                    logger.error(
+                        "Unexpected error removing file {}: {}".format(fn, e))
 
     def show_info(self):
         """Show detailed info"""
@@ -1317,7 +1322,7 @@ class DetailScreen(Screen):
         Called if downloadPage fails.
         Logs the error and shows a fallback message.
         """
-        logger.error(f"Error downloading image: {failure}")
+        logger.error("Error downloading image: {}".format(failure))
         self["description"].setText(_("Failed to load image."))
 
     def close(self):

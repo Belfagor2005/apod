@@ -1,8 +1,6 @@
 """
 Split off some library functions for easier testing and code management.
-
 Created on Mar 24, 2017
-
 @author=bathomas @email=brian.a.thomas@nasa.gov
 """
 
@@ -14,15 +12,10 @@ import json
 import re
 import urllib3
 from lxml import html
-# import urllib.request
 
 LOG = logging.getLogger(__name__)
 logging.basicConfig(level=logging.WARN)
-
-# location of backing APOD service
 BASE = 'https://apod.nasa.gov/apod/'
-
-# Create urllib3 Pool Manager
 http = urllib3.PoolManager()
 
 
