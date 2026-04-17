@@ -85,7 +85,7 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
-msgid "Search results: {len(self.filtered_data)}"
+msgid "Search results: {}"
 msgstr ""
 
 msgid "Search..."

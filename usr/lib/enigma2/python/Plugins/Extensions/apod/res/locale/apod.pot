@@ -16,6 +16,7 @@
 
 
 
+
 msgid "APOD Plugin Settings"
 msgstr ""
 
@@ -91,7 +92,7 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
-msgid "Search results: {len(self.filtered_data)}"
+msgid "Search results: {}"
 msgstr ""
 
 msgid "Search..."

@@ -92,7 +92,7 @@ msgstr "Premere OK per riprodurre il video"
 msgid "Save"
 msgstr "Salva"
 
-msgid "Search results: {len(self.filtered_data)}"
+msgid "Search results: {}"
 msgstr ""
 
 msgid "Search..."
