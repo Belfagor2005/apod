@@ -219,7 +219,8 @@ class SecurityManager:
 
             domain = parsed.netloc.lower()
             if not any(allowed in domain for allowed in allowed_domains):
-                logger.warning("Blocked unauthorized domain: {}".format(domain))
+                logger.warning(
+                    "Blocked unauthorized domain: {}".format(domain))
                 return False
 
             return True
@@ -339,10 +340,12 @@ class SecureAPIClient:
             )
 
             if response.status_code != 200:
-                logger.error("API request failed: {}".format(response.status_code))
+                logger.error(
+                    "API request failed: {}".format(
+                        response.status_code))
                 raise APIError(
-                    "API request failed with status code: {}".format(response.status_code)
-                )
+                    "API request failed with status code: {}".format(
+                        response.status_code))
 
             # Validate JSON response
             data = response.json()
@@ -957,7 +960,8 @@ class ArchiveScreen(Screen):
                 "title", "").lower()]
         self.search_active = True
         self.build_list(self.filtered_data)
-        self["status"].setText(_("Search results: {}".format(len(self.filtered_data))))
+        self["status"].setText(
+            _("Search results: {}".format(len(self.filtered_data))))
 
     def open_config(self):
         """

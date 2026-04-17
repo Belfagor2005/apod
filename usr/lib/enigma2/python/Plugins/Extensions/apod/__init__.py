@@ -28,7 +28,9 @@ def _(txt):
     if translated:
         return translated
     else:
-        print("[%s] fallback to default translation for %s" % (PluginLanguageDomain, txt))
+        print(
+            "[%s] fallback to default translation for %s" %
+            (PluginLanguageDomain, txt))
         return gettext.gettext(txt)
 
 
