@@ -37,8 +37,7 @@ def get_service_version(response):
 
 
 def get_title(response):
-    service_version = response['title']
-    return service_version
+    return response['title']
 
 
 def get_url(response):
@@ -47,13 +46,13 @@ def get_url(response):
 
 
 def download_image(url, date):
-    if os.path.isfile(f'{date}.png') is False:
+    if not os.path.isfile(f'{date}.jpg'):
         raw_image = requests.get(url).content
         with open(f'{date}.jpg', 'wb') as file:
             file.write(raw_image)
 
     else:
-        return FileExistsError
+        raise FileExistsError(f'{date}.jpg already exists')
 
 
 def convert_image(image_path):

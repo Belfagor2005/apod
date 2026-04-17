@@ -1,11 +1,10 @@
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-
 from datetime import date
 import logging
 from json import dump as json_dump, load as json_load
 from os import listdir, makedirs, remove
-from os.path import basename, exists, getmtime, getsize, join, splitext
+from os.path import basename, exists, getmtime, getsize, join, splitext, realpath
 from re import search
 from shutil import copyfileobj
 from urllib.parse import urlparse
@@ -135,7 +134,7 @@ TMP_LOG = join(CACHE_DIR, "apod_debug.log")
 TMP_JSON = join(CACHE_DIR, "apod_response.json")
 DEFAULT_IMAGE = join(plugin_path, "res/icons/default_apod_image.jpg")
 api_key_file = '/etc/apod_api_key'
-api_key_file2 = '/etc/enigma2/apod_api_key',
+api_key_file2 = '/etc/enigma2/apod_api_key'
 today = date.today()
 logger = logging.getLogger(title_plug)
 
@@ -382,11 +381,9 @@ class SecureCacheManager:
     def secure_cache_path(self, filename):
         """Ensure cached files stay within cache directory"""
         safe_name = SecurityManager.sanitize_filename(filename)
-        full_path = join(self.cache_dir, safe_name)
-
-        # Prevent directory traversal
-        if not full_path.startswith(self.cache_dir):
-            raise SecurityError("Invalid cache path")
+        full_path = realpath(join(self.cache_dir, safe_name))
+        if not full_path.startswith(realpath(self.cache_dir)):
+            raise SecurityError("Path traversal detected")
 
         return full_path
 
@@ -436,71 +433,6 @@ class SecureCacheManager:
                     remove(join(self.cache_dir, f))
                 except BaseException:
                     pass
-
-
-class AdvancedDownloadManager:
-    def __init__(self):
-        self.concurrent_downloads = 0
-        self.max_concurrent = 2
-        self.download_queue = []
-        self.active_downloads = {}
-
-    def safe_download(self, url, local_path, callback, errback):
-        """Download with comprehensive safety checks"""
-        if not SecurityManager.validate_url(url):
-            errback(Exception("URL validation failed"))
-            return
-
-        safe_path = join(
-            CACHE_DIR,
-            SecurityManager.sanitize_filename(
-                basename(local_path)))
-
-        if exists(safe_path):
-            callback(safe_path)
-            return
-
-        if self.concurrent_downloads >= self.max_concurrent:
-            self.download_queue.append((url, safe_path, callback, errback))
-            return
-
-        self.concurrent_downloads += 1
-        self.active_downloads[url] = safe_path
-
-        def on_success(result):
-            self.concurrent_downloads -= 1
-            if SecurityManager.verify_file_integrity(safe_path):
-                callback(safe_path)
-            else:
-                # Remove corrupted file
-                try:
-                    remove(safe_path)
-                except BaseException:
-                    pass
-                errback(Exception("File integrity check failed"))
-            self.process_queue()
-
-        def on_failure(failure):
-            self.concurrent_downloads -= 1
-            logger.error("Download failed: {}".format(failure))
-            errback(failure)
-            self.process_queue()
-
-        downloadPage(url.encode('utf-8'), safe_path, timeout=30
-                     ).addCallbacks(on_success, on_failure)
-
-    def process_queue(self):
-        """Process queued downloads"""
-        while self.download_queue and self.concurrent_downloads < self.max_concurrent:
-            url, path, callback, errback = self.download_queue.pop(0)
-            self.safe_download(url, path, callback, errback)
-
-    def cancel_all_downloads(self):
-        """Cancel all active and queued downloads"""
-        self.download_queue = []
-        # Note: Cannot cancel active twisted downloads easily
-        # But we can mark them for cleanup
-        self.concurrent_downloads = 0
 
 
 class APODConfigScreen(ConfigListScreen, Screen):
@@ -623,7 +555,9 @@ class SplashScreen(Screen):
             if data.get("media_type") != "image":
                 raise ValueError("Today's APOD is not an image")
 
-            img_url = data.get("url")  # Non usare hdurl che è TIFF!
+            img_url = data.get("url")
+            if img_url.lower().endswith(('.tif', '.tiff')):
+                img_url = data.get("url")
             logger.info("Image URL: {}".format(img_url))
 
             # Download image
@@ -1253,7 +1187,9 @@ class DetailScreen(Screen):
                 result = ydl.extract_info(yt_url, download=False)
                 if result and 'url' in result:
                     video_url = result['url']
-                    print("Here in Test url = %s" % video_url)
+                else:
+                    video_url = yt_url
+                stream = eServiceReference(4097, 0, video_url)
 
                 stream = eServiceReference(4097, 0, video_url)
                 logger.debug("Extracted video URL: {}".format(stream))
@@ -1329,6 +1265,8 @@ class DetailScreen(Screen):
         self.active = False
         if hasattr(self, 'picload'):
             self.picload = None
+        if hasattr(self, 'gif_timer'):
+            self.gif_timer.stop()
         Screen.close(self)
 
 
