@@ -11,7 +11,7 @@ __copyright__ = "Copyright (c) 2024 Lululla"
 __license__ = "GPL-v2"
 __version__ = "2.1"
 DEBUG = True
-SYSTEM_DIR = '/etc/enigma2/foreca'
+SYSTEM_DIR = '/etc/enigma2/apod'
 
 PluginLanguageDomain = 'apod'
 PluginLanguagePath = 'Extensions/apod/res/locale'
