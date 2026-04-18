@@ -1,8 +1,8 @@
 #!/bin/bash
 ## setup command=wget -q --no-check-certificate https://raw.githubusercontent.com/Belfagor2005/apod/main/installer.sh -O - | /bin/sh
 
-version='2.0'
-changelog='Porting to Python3'
+version='2.1'
+changelog='Porting to Python3\nAdd IA Translate'
 TMPPATH=/tmp/apod-install
 FILEPATH=/tmp/apod-main.tar.gz
 

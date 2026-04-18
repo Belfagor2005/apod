@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-from datetime import date
+
 import logging
 from json import dump as json_dump, load as json_load
 from os import listdir, makedirs, remove
@@ -8,7 +8,7 @@ from os.path import basename, exists, getmtime, getsize, join, splitext, realpat
 from re import search
 from shutil import copyfileobj
 from urllib.parse import urlparse
-
+from datetime import date, timedelta, datetime
 import requests
 from twisted.internet import reactor, threads
 from twisted.web.client import downloadPage
@@ -34,12 +34,13 @@ from Plugins.Plugin import PluginDescriptor
 from Tools.Directories import fileExists
 from Tools.LoadPixmap import LoadPixmap
 
+from .google_translate import trans
 from . import _, __version__
+from .res.lib.apod_utility import parse_apod
 """
 #########################################################
 #                                                       #
 #  APOD - Astronomy Picture of the Day Plugin           #
-#  Version: 1.7                                         #
 #  Created by Lululla (https://github.com/Belfagor2005) #
 #  License: CC BY-NC-SA 4.0                             #
 #  https://creativecommons.org/licenses/by-nc-sa/4.0    #
@@ -118,8 +119,6 @@ Once done, the plugin should be able to access NASA's APOD data and display the 
 ---
 
 """
-
-
 title_plug = 'Picture of The Day - Nasa %s by %s' % (__version__, __author__)
 plugin_path = '/usr/lib/enigma2/python/Plugins/Extensions/apod'
 CACHE_DIR = "/tmp/apod_cache/"
@@ -170,7 +169,13 @@ config.plugins.apod.sort_order = ConfigSelection(
         ("Descending", "Descending")
     ]
 )
-
+config.plugins.apod.fetch_mode = ConfigSelection(
+    default="recent",
+    choices=[
+        ("random", _("Random")),
+        ("recent", _("Recent (date range)"))
+    ]
+)
 try:
     config.plugins.apod.api_key.load()
 except Exception as e:
@@ -459,9 +464,9 @@ class APODConfigScreen(ConfigListScreen, Screen):
         self.list = [
             getConfigListEntry(_("NASA API Key:"), config.plugins.apod.api_key),
             getConfigListEntry(_("Number of APODs to fetch:"), config.plugins.apod.count),
+            getConfigListEntry(_("Fetch mode:"), config.plugins.apod.fetch_mode),   # nuova
             getConfigListEntry(_("Sort order:"), config.plugins.apod.sort_order)
         ]
-
         ConfigListScreen.__init__(self, self.list)
 
         self["actions"] = HelpableActionMap(
@@ -664,47 +669,92 @@ class SplashScreen(Screen):
 
 
 class ArchiveScreen(Screen):
-    skin = """
-    <screen name="ArchiveScreen" position="center,center" size="1280,720" flags="wfNoBorder">
-        <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/apod/res/icons/back.png" position="0,0" size="1280,720" alphatest="blend" zPosition="-3" cornerRadius="30" />
-        <ePixmap position="0,0" size="1280,720" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/apod/res/icons/backgtr.png" alphatest="blend" zPosition="-2" cornerRadius="30" />
-        <widget source="list" render="Listbox" position="6,59" size="1099,592" transparent="1" itemHeight="60" enableWrapAround="1" scrollbarMode="showNever">
-            <convert type="TemplatedMultiContent">
-                {
-                    "template": [
-                        MultiContentEntryPixmapAlphaBlend(
-                            pos=(10, 5),
-                            size=(50, 50),
-                            png=0
-                        ),
-                        MultiContentEntryText(
-                            pos=(70, 5),
-                            size=(1100, 25),
-                            font=0,
-                            flags=RT_HALIGN_LEFT | RT_VALIGN_CENTER,
-                            text=1
-                        ),
-                        MultiContentEntryText(
-                            pos=(70, 30),
-                            size=(1100, 25),
-                            font=1,
-                            flags=RT_HALIGN_LEFT | RT_VALIGN_CENTER,
-                            text=2
-                        )
-                    ],
-                    "fonts": [gFont("Regular", 24), gFont("Regular", 22)],
-                    "itemHeight": 60
-                }
-            </convert>
-        </widget>
-        <widget name="title" position="5,5" size="1280,50" font="Regular; 32" transparent="1" zPosition="3" halign="center" />
-        <widget name="status" position="5,657" size="1203,50" font="Regular;28" halign="center" />
-        <eLabel name="" position="1155,109" size="75,75" backgroundColor="#002a2a2a" halign="center" valign="center" transparent="0" cornerRadius="40" font="Regular; 17" zPosition="1" text="MENU" />
-        <eLabel name="" position="1155,197" size="75,75" backgroundColor="#002a2a2a" halign="center" valign="center" transparent="0" cornerRadius="40" font="Regular; 17" zPosition="1" text="OK" />
-        <eLabel name="" position="1158,290" size="75,75" backgroundColor="#002a2a2a" halign="center" valign="center" transparent="0" cornerRadius="40" font="Regular; 17" zPosition="1" text="INFO" />
-        <eLabel name="" position="1160,385" size="75,75" backgroundColor="#2a70a4" halign="center" valign="center" transparent="0" cornerRadius="40" font="Regular; 17" zPosition="1" text="SEARCH" />
-        <eLabel name="" position="1162,487" size="75,75" backgroundColor="#9f1313" halign="center" valign="center" transparent="0" cornerRadius="40" font="Regular; 17" zPosition="1" text="EXIT" />
-    </screen>"""
+    if screen_width == 1920:
+        skin = """
+        <screen name="ArchiveScreen" position="center,center" size="1920,1080" flags="wfNoBorder">
+            <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/apod/res/icons/back.png" position="0,0" size="1920,1080" alphatest="blend" scale="1" zPosition="-3" cornerRadius="45" />
+            <ePixmap position="0,0" size="1920,1080" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/apod/res/icons/backgtr.png" alphatest="blend" scale="1" zPosition="-2" cornerRadius="45" />
+            <widget source="list" render="Listbox" position="9,89" size="1648,888" transparent="1" itemHeight="90" enableWrapAround="1" scrollbarMode="showNever">
+                <convert type="TemplatedMultiContent">
+                    {
+                        "template": [
+                            MultiContentEntryPixmapAlphaBlend(
+                                pos=(15, 8),
+                                size=(75, 75),
+                                png=0
+                            ),
+                            MultiContentEntryText(
+                                pos=(105, 8),
+                                size=(1650, 38),
+                                font=0,
+                                flags=RT_HALIGN_LEFT | RT_VALIGN_CENTER,
+                                text=1
+                            ),
+                            MultiContentEntryText(
+                                pos=(105, 45),
+                                size=(1650, 38),
+                                font=1,
+                                flags=RT_HALIGN_LEFT | RT_VALIGN_CENTER,
+                                text=2
+                            )
+                        ],
+                        "fonts": [gFont("Regular", 36), gFont("Regular", 33)],
+                        "itemHeight": 90
+                    }
+                </convert>
+            </widget>
+            <widget name="title" position="8,8" size="1920,75" font="Regular; 48" transparent="1" zPosition="3" halign="center" />
+            <widget name="status" position="8,985" size="1805,75" font="Regular;42" halign="center" />
+            <eLabel name="" position="1732,164" size="113,113" backgroundColor="#002a2a2a" halign="center" valign="center" transparent="0" cornerRadius="60" font="Regular; 26" zPosition="1" text="MENU" />
+            <eLabel name="" position="1732,296" size="113,113" backgroundColor="#002a2a2a" halign="center" valign="center" transparent="0" cornerRadius="60" font="Regular; 26" zPosition="1" text="OK" />
+            <eLabel name="" position="1737,435" size="113,113" backgroundColor="#002a2a2a" halign="center" valign="center" transparent="0" cornerRadius="60" font="Regular; 26" zPosition="1" text="INFO" />
+            <eLabel name="" position="1740,578" size="113,113" backgroundColor="#2a70a4" halign="center" valign="center" transparent="0" cornerRadius="60" font="Regular; 26" zPosition="1" text="SEARCH" />
+            <eLabel name="" position="1743,731" size="113,113" backgroundColor="#9f1313" halign="center" valign="center" transparent="0" cornerRadius="60" font="Regular; 26" zPosition="1" text="EXIT" />
+        </screen>
+        """
+    
+    else:
+        skin = """
+        <screen name="ArchiveScreen" position="center,center" size="1280,720" flags="wfNoBorder">
+            <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/apod/res/icons/back.png" position="0,0" size="1280,720" alphatest="blend" scale="1" zPosition="-3" cornerRadius="30" />
+            <ePixmap position="0,0" size="1280,720" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/apod/res/icons/backgtr.png" alphatest="blend" scale="1" zPosition="-2" cornerRadius="30" />
+            <widget source="list" render="Listbox" position="6,59" size="1099,592" transparent="1" itemHeight="60" enableWrapAround="1" scrollbarMode="showNever">
+                <convert type="TemplatedMultiContent">
+                    {
+                        "template": [
+                            MultiContentEntryPixmapAlphaBlend(
+                                pos=(10, 5),
+                                size=(50, 50),
+                                png=0
+                            ),
+                            MultiContentEntryText(
+                                pos=(70, 5),
+                                size=(1100, 25),
+                                font=0,
+                                flags=RT_HALIGN_LEFT | RT_VALIGN_CENTER,
+                                text=1
+                            ),
+                            MultiContentEntryText(
+                                pos=(70, 30),
+                                size=(1100, 25),
+                                font=1,
+                                flags=RT_HALIGN_LEFT | RT_VALIGN_CENTER,
+                                text=2
+                            )
+                        ],
+                        "fonts": [gFont("Regular", 24), gFont("Regular", 22)],
+                        "itemHeight": 60
+                    }
+                </convert>
+            </widget>
+            <widget name="title" position="5,5" size="1280,50" font="Regular; 32" transparent="1" zPosition="3" halign="center" />
+            <widget name="status" position="5,657" size="1203,50" font="Regular;28" halign="center" />
+            <eLabel name="" position="1155,109" size="75,75" backgroundColor="#002a2a2a" halign="center" valign="center" transparent="0" cornerRadius="40" font="Regular; 17" zPosition="1" text="MENU" />
+            <eLabel name="" position="1155,197" size="75,75" backgroundColor="#002a2a2a" halign="center" valign="center" transparent="0" cornerRadius="40" font="Regular; 17" zPosition="1" text="OK" />
+            <eLabel name="" position="1158,290" size="75,75" backgroundColor="#002a2a2a" halign="center" valign="center" transparent="0" cornerRadius="40" font="Regular; 17" zPosition="1" text="INFO" />
+            <eLabel name="" position="1160,385" size="75,75" backgroundColor="#2a70a4" halign="center" valign="center" transparent="0" cornerRadius="40" font="Regular; 17" zPosition="1" text="SEARCH" />
+            <eLabel name="" position="1162,487" size="75,75" backgroundColor="#9f1313" halign="center" valign="center" transparent="0" cornerRadius="40" font="Regular; 17" zPosition="1" text="EXIT" />
+        </screen>"""
 
     def __init__(self, session):
         Screen.__init__(self, session)
@@ -778,53 +828,47 @@ class ArchiveScreen(Screen):
         )
 
     def fetch_data(self):
-        """Fetch fresh APOD entries from NASA API"""
+        """Fetch APOD entries: random or recent date range."""
         try:
-            count = config.plugins.apod.count.value
+            count = int(config.plugins.apod.count.value)
             api_key = config.plugins.apod.api_key.value
-
-            logger.info("Fetching fresh data - Count: {}, API Key: {}".format(count,
-                        api_key[:8] + "..." if api_key else "None"))
+            fetch_mode = config.plugins.apod.fetch_mode.value
 
             if not APIKeyManager.is_valid_api_key(api_key):
                 logger.error("Invalid API key")
                 return []
 
             url = "https://api.nasa.gov/planetary/apod"
-            params = {'api_key': api_key, 'count': count}
+            params = {'api_key': api_key}
 
-            logger.info("Making fresh API request...")
+            if fetch_mode == "random":
+                params['count'] = count
+                logger.info(f"Fetching {count} random APODs")
+            else:   # modalità "recent"
+                # Limita a max 365 giorni per evitare timeout (puoi aumentare)
+                days = min(count, 365)
+                today = date.today()
+                start_date = today - timedelta(days=days)
+                params['start_date'] = start_date.strftime('%Y-%m-%d')
+                params['end_date'] = today.strftime('%Y-%m-%d')
+                logger.info(f"Fetching APODs from {params['start_date']} to {params['end_date']}")
+
             response = requests.get(url, params=params, timeout=30)
-            logger.info("Response status: {}".format(response.status_code))
+            logger.info(f"Response status: {response.status_code}")
 
             if response.status_code == 200:
                 data = response.json()
-                logger.info(
-                    "Success! Received {} fresh entries".format(
-                        len(data) if data else 0))
-
-                if data:
-                    first = data[0]
-                    logger.info("First entry date: {}, title: {}".format(
-                        first.get('date', 'No date'),
-                        first.get('title', 'No title')
-                    ))
-
-                try:
-                    with open(TMP_JSON, 'w') as f:
-                        json_dump(data, f)
-                    logger.info("Fresh data saved to cache")
-                except Exception as e:
-                    logger.error("Cache save failed: {}".format(e))
-
+                logger.info(f"Received {len(data)} entries")
+                # Salva in cache
+                with open(TMP_JSON, 'w') as f:
+                    json_dump(data, f)
                 return data
             else:
-                logger.error("API error {}: {}".format(
-                    response.status_code, response.text[:200]))
+                logger.error(f"API error {response.status_code}: {response.text[:200]}")
                 return []
 
         except Exception as e:
-            logger.exception("Fetch data exception: {}".format(e))
+            logger.exception(f"Fetch data exception: {e}")
             return []
 
     def on_data_fetched(self, data):
@@ -937,9 +981,12 @@ class ArchiveScreen(Screen):
             entry = self.raw_data[idx]
             title = entry.get("title", "No Title")
             explanation = entry.get("explanation", "No Description")
+            # Translate title and explanation
+            translated_title = trans(title)
+            translated_explanation = trans(explanation)
             self.session.open(
                 MessageBox,
-                "Title: {}\n\nExplanation:\n{}".format(title, explanation),
+                "Title: {}\n\nExplanation:\n{}".format(translated_title, translated_explanation),
                 MessageBox.TYPE_INFO
             )
 
@@ -1008,6 +1055,269 @@ class ArchiveScreen(Screen):
 
 
 class DetailScreen(Screen):
+    if screen_width == 1920:
+        skin = """
+        <screen name="DetailScreen" position="center,center" size="1600,900" flags="wfNoBorder">
+            <widget name="image" position="75,72" size="1459,586" alphatest="off" scale="1" cornerRadius="90" zPosition="3" />
+            <widget name="date" position="1160,5" size="350,60" font="Regular;26" halign="right" valign="center" zPosition="3" backgroundGradient="#2a70a4,mint,lmsb,horizontal" />
+            <widget name="title" position="80,5" size="1075,60" font="Regular;32" halign="center" valign="center" backgroundGradient="#2a70a4,mint,lmsb,horizontal" />
+            <widget name="description" position="12,662" size="1569,237" font="Regular;26" transparent="1" zPosition="3" />
+            <eLabel name="" position="1520,0" size="70,70" backgroundColor="#002a2a2a" halign="center" valign="center" transparent="0" cornerRadius="40" font="Regular; 17" zPosition="3" text="INFO" />
+        </screen>"""
+    else:
+        skin = """
+        <screen name="DetailScreen" position="center,center" size="1280,720" flags="wfNoBorder">
+            <widget name="image" position="1,74" size="1280,420" alphatest="off" scale="1" cornerRadius="90" zPosition="3" />
+            <widget name="date" position="835,5" size="350,60" font="Regular;26" halign="right" valign="center" zPosition="3" backgroundGradient="#2a70a4,mint,lmsb,horizontal" />
+            <widget name="title" position="5,5" size="830,60" font="Regular;32" halign="center" valign="center" backgroundGradient="#2a70a4,mint,lmsb,horizontal" />
+            <widget name="description" position="0,498" size="1282,220" font="Regular;26" transparent="1" zPosition="3" />
+            <eLabel name="" position="1199,5" size="70,70" backgroundColor="#002a2a2a" halign="center" valign="center" transparent="0" cornerRadius="40" font="Regular; 17" zPosition="3" text="INFO" />
+        </screen>"""
+
+    def __init__(self, session, data):
+        Screen.__init__(self, session)
+        self.session = session
+        self.data = data
+        self.active = True
+        self["image"] = Pixmap()
+        self["description"] = Label("")
+        
+        # Translate title
+        title_raw = self.data.get("title", "")
+        self.translated_title = trans(title_raw) if title_raw else ""
+        self["title"] = Label(self.translated_title)
+        
+        # Translate date if it contains month names (e.g. "2026 April 18")
+        date_raw = self.data.get("date", "")
+        if date_raw and any(c.isalpha() for c in date_raw):
+            date_trans = trans(date_raw)
+        else:
+            date_trans = date_raw
+        self["date"] = Label(date_trans)
+
+        self["actions"] = HelpableActionMap(
+            self, "ApodActions",
+            {
+                "ok": self.on_ok,
+                "cancel": self.close,
+                "info": self.show_info
+            }, -1
+        )
+
+        # If essential fields are missing (e.g. from scraping), fetch them
+        if 'explanation' not in self.data or 'url' not in self.data or 'media_type' not in self.data:
+            self.fetch_missing_data()
+        else:
+            self.onLayoutFinish.append(self.load_media)
+
+    def fetch_missing_data(self):
+        """Fetch missing explanation, URL, media_type from the individual APOD page using parse_apod."""
+        try:
+            # page_url = self.data.get('page_url')
+            date_str = self.data.get('date')
+            if not date_str:
+                logger.error("No date or page_url to fetch missing data")
+                self.onLayoutFinish.append(self.load_media)
+                return
+            
+            # Parse date string to date object
+            try:
+                if '-' in date_str:
+                    dt = datetime.datetime.strptime(date_str, "%Y-%m-%d").date()
+                else:
+                    dt = datetime.datetime.strptime(date_str, "%Y %B %d").date()
+            except:
+                logger.error(f"Unable to parse date: {date_str}")
+                self.onLayoutFinish.append(self.load_media)
+                return
+            
+            full_data = parse_apod(dt, use_default_today_date=False, thumbs=False)
+            if full_data:
+                self.data.update(full_data)
+                if 'explanation' in full_data:
+                    self.data['explanation_translated'] = trans(full_data['explanation'])
+                logger.info(f"Fetched missing data for {date_str}")
+            else:
+                # Fallback dummy data
+                self.data['explanation'] = "No description available"
+                self.data['media_type'] = 'image'
+                self.data['url'] = ''
+        except Exception as e:
+            logger.exception(f"Error fetching missing data: {e}")
+            self.data['explanation'] = "Error loading details"
+            self.data['media_type'] = 'image'
+            self.data['url'] = ''
+        finally:
+            self.onLayoutFinish.append(self.load_media)
+
+    def load_media(self):
+        """Branch: image, video, or GIF."""
+        if not self.active:
+            return
+
+        mt = self.data.get("media_type", "image")
+        if mt == "image":
+            self.load_image()
+        elif mt == "video":
+            self["description"].setText(trans("Press OK to play video"))
+        elif mt == "gif":
+            url = self.data.get("hdurl") or self.data.get("url")
+            self.show_animated_gif(url)
+        else:
+            explanation = self.data.get("explanation_translated") or self.data.get("explanation", "")
+            if explanation and not self.data.get("explanation_translated"):
+                explanation = trans(explanation)
+                self.data['explanation_translated'] = explanation
+            self["description"].setText(explanation)
+
+    def load_image(self, url=None, force=False):
+        """Download and display the image."""
+        self["description"].setText(trans("Loading image..."))
+        if not url:
+            url = self.data.get("hdurl") or self.data.get("url")
+            if not url:
+                self["description"].setText(trans("No image URL available"))
+                return
+
+        if not force:
+            parsed_url = urlparse(url)
+            file_ext = splitext(parsed_url.path)[1].lower() or ".jpg"
+            filename = "{}{}".format(self.data['date'], file_ext)
+            local_path = join(CACHE_DIR, filename)
+
+            if exists(local_path):
+                self.update_image(local_path)
+                return
+
+        self.download_image(url, local_path if not force else None)
+
+    def download_image(self, url, local_path=None):
+        """Download image using downloadPage."""
+        try:
+            if not local_path:
+                parsed_url = urlparse(url)
+                file_ext = splitext(parsed_url.path)[1].lower() or ".jpg"
+                filename = "{}{}".format(self.data['date'], file_ext)
+                local_path = join(CACHE_DIR, filename)
+            logger.info("Downloading image: {}".format(url))
+            downloadPage(
+                url.encode('utf-8'),
+                local_path
+            ).addCallbacks(
+                lambda result: self.update_image(local_path),
+                lambda failure: self.handle_download_error(failure, url)
+            )
+        except Exception as e:
+            logger.error("Download error: {}".format(e))
+            self.handle_download_error(e, url)
+
+    def update_image(self, path):
+        """Display the image and set the translated explanation."""
+        if exists(path):
+            try:
+                self["image"].instance.setPixmapFromFile(path)
+                explanation = self.data.get("explanation_translated") or self.data.get("explanation", "")
+                if explanation and not self.data.get("explanation_translated"):
+                    explanation = trans(explanation)
+                    self.data['explanation_translated'] = explanation
+                self["description"].setText(explanation)
+                logger.info("Image displayed: {}".format(path))
+            except Exception as e:
+                logger.error("Failed to display image: {}".format(e))
+                self["description"].setText(trans("Error displaying image"))
+        else:
+            logger.warning("Image file not found: {}".format(path))
+            self["description"].setText(trans("Image not available"))
+
+    def handle_download_error(self, error, url):
+        logger.error("Download failed for {}: {}".format(url, error))
+        self["description"].setText(trans("Failed to download image"))
+
+    def on_ok(self):
+        if not self.active:
+            return
+        mt = self.data.get("media_type", "image")
+        if mt == "video":
+            self.play_video()
+        elif mt == "gif":
+            url = self.data.get("hdurl") or self.data.get("url")
+            self.show_animated_gif(url)
+        elif mt == "image":
+            lowres_url = self.data.get("url")
+            self.load_image(lowres_url, force=True)
+        else:
+            self.close()
+
+    def play_video(self):
+        url = self.data.get("url", "")
+        logger.info("Playing video: {}".format(url))
+        m = search(r"(?:v=|youtu\.be/|embed/)([\w-]+)", url)
+        if not m:
+            self.session.open(MessageBox, trans("Unsupported video URL"), MessageBox.TYPE_INFO)
+            return
+        vid = m.group(1)
+        try:
+            from youtube_dl import YoutubeDL
+        except ImportError:
+            self.session.open(MessageBox, trans('Please install "YoutubeDL" plugin!'), MessageBox.TYPE_ERROR)
+            return
+        try:
+            yt_url = 'https://www.youtube.com/watch?v={}'.format(vid)
+            ydl_opts = {'format': 'best'}
+            ydl = YoutubeDL(ydl_opts)
+            ydl.add_default_info_extractors()
+            result = ydl.extract_info(yt_url, download=False)
+            video_url = result.get('url', yt_url) if result else yt_url
+            stream = eServiceReference(4097, 0, video_url)
+            stream.setName(self.data.get('title', 'APOD Video'))
+            self.session.open(MoviePlayer, stream)
+        except Exception as e:
+            logger.error("Video playback error: {}".format(e))
+            self.session.open(MessageBox, trans("Video playback failed"), MessageBox.TYPE_INFO)
+
+    def show_animated_gif(self, url):
+        try:
+            from enigma import ePicLoad
+            self.picload = ePicLoad()
+            self.picload.setPara(
+                (
+                    self["image"].instance.size().width(),
+                    self["image"].instance.size().height(),
+                    1, 1, 0, 0, '#00000000'
+                )
+            )
+            self.picload.startDecode(url)
+            self.gif_timer = eTimer()
+            self.gif_timer.callback.append(self.check_gif_status)
+            self.gif_timer.start(100)
+        except Exception as e:
+            logger.error("GIF error: " + str(e))
+
+    def check_gif_status(self):
+        if self.picload.getData() is None:
+            return
+        self["image"].instance.setPixmap(self.picload.getData())
+
+    def show_info(self):
+        title = self.translated_title or trans(self.data.get("title", "No Title"))
+        explanation = self.data.get("explanation_translated") or trans(self.data.get("explanation", "No Description"))
+        msg = "{}\n\n{}".format(title, explanation)
+        self.session.open(MessageBox, msg, MessageBox.TYPE_INFO)
+
+    def handle_error(self, failure):
+        logger.error("Error downloading image: {}".format(failure))
+        self["description"].setText(trans("Failed to load image."))
+
+    def close(self):
+        self.active = False
+        if hasattr(self, 'picload'):
+            self.picload = None
+        if hasattr(self, 'gif_timer'):
+            self.gif_timer.stop()
+        Screen.close(self)
+
+
+class DetailScreen222222(Screen):
 
     if screen_width == 1920:
         skin = """
@@ -1062,7 +1372,9 @@ class DetailScreen(Screen):
             url = self.data.get("hdurl") or self.data.get("url")
             self.show_animated_gif(url)
         else:
-            self["description"].setText(self.data.get("explanation", ""))
+            original_desc = self.data.get("explanation", "")
+            translated_desc = trans(original_desc)
+            self["description"].setText(translated_desc)
 
     def load_image(self, url=None, force=False):
         """
@@ -1114,7 +1426,10 @@ class DetailScreen(Screen):
         if exists(path):
             try:
                 self["image"].instance.setPixmapFromFile(path)
-                self["description"].setText(self.data.get("explanation", ""))
+
+                original_desc = self.data.get("explanation", "")
+                translated_desc = trans(original_desc)
+                self["description"].setText(translated_desc)
                 logger.info("Image displayed: {}".format(path))
             except Exception as e:
                 logger.error("Failed to display image: {}".format(e))

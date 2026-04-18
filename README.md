@@ -5,7 +5,7 @@
 </p>
 
 ![](https://komarev.com/ghpvc/?username=Belfagor2005)
-![Version](https://img.shields.io/badge/version-2.0-blue)
+![Version](https://img.shields.io/badge/version-2.1-blue)
 ![Python](https://img.shields.io/badge/Python3-only-orange.svg)
 [![Python package](https://github.com/Belfagor2005/apod/actions/workflows/pylint.yml/badge.svg)](https://github.com/Belfagor2005/apod/actions/workflows/pylint.yml)
 
