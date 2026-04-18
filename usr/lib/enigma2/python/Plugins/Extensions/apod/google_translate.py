@@ -300,7 +300,8 @@ def translate_text(text, target_lang=None, use_cache=True):
     # Error handling for overly long texts
     if len(text_unicode) > MAX_CHARS_PER_REQUEST:
         _log(
-            f"Text too long ({len(text_unicode)} chars), truncated to {MAX_CHARS_PER_REQUEST}")
+            f"Text too long ({
+                len(text_unicode)} chars), truncated to {MAX_CHARS_PER_REQUEST}")
         text_unicode = text_unicode[:MAX_CHARS_PER_REQUEST]
 
     # Prepare the request
@@ -580,13 +581,16 @@ def test_translation():
             status = "✗ FAIL"
             all_passed = False
         if DEBUG:
-            print(f"{status}: '{original}' -> '{result}' (expected: '{expected}')")
+            print(
+                f"{status}: '{original}' -> '{result}' (expected: '{expected}')")
     if DEBUG:
         print("=" * 60)
         stats = get_cache_stats()
         print(
-            f"Cache statistics: {stats['hits']} hits, {stats['misses']} misses, "
-            f"rate: {stats['hit_rate']:.1%}")
+            f"Cache statistics: {
+                stats['hits']} hits, {
+                stats['misses']} misses, " f"rate: {
+                stats['hit_rate']:.1%}")
         print("=" * 60)
 
     return all_passed

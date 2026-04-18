@@ -462,10 +462,19 @@ class APODConfigScreen(ConfigListScreen, Screen):
         self["key_red"] = Label(_("Cancel"))
 
         self.list = [
-            getConfigListEntry(_("NASA API Key:"), config.plugins.apod.api_key),
-            getConfigListEntry(_("Number of APODs to fetch:"), config.plugins.apod.count),
-            getConfigListEntry(_("Fetch mode:"), config.plugins.apod.fetch_mode),   # nuova
-            getConfigListEntry(_("Sort order:"), config.plugins.apod.sort_order)
+            getConfigListEntry(
+                _("NASA API Key:"),
+                config.plugins.apod.api_key),
+            getConfigListEntry(
+                _("Number of APODs to fetch:"),
+                config.plugins.apod.count),
+            getConfigListEntry(
+                _("Fetch mode:"),
+                config.plugins.apod.fetch_mode),
+            # nuova
+            getConfigListEntry(
+                _("Sort order:"),
+                config.plugins.apod.sort_order)
         ]
         ConfigListScreen.__init__(self, self.list)
 
@@ -712,7 +721,7 @@ class ArchiveScreen(Screen):
             <eLabel name="" position="1743,731" size="113,113" backgroundColor="#9f1313" halign="center" valign="center" transparent="0" cornerRadius="60" font="Regular; 26" zPosition="1" text="EXIT" />
         </screen>
         """
-    
+
     else:
         skin = """
         <screen name="ArchiveScreen" position="center,center" size="1280,720" flags="wfNoBorder">
@@ -851,7 +860,10 @@ class ArchiveScreen(Screen):
                 start_date = today - timedelta(days=days)
                 params['start_date'] = start_date.strftime('%Y-%m-%d')
                 params['end_date'] = today.strftime('%Y-%m-%d')
-                logger.info(f"Fetching APODs from {params['start_date']} to {params['end_date']}")
+                logger.info(
+                    f"Fetching APODs from {
+                        params['start_date']} to {
+                        params['end_date']}")
 
             response = requests.get(url, params=params, timeout=30)
             logger.info(f"Response status: {response.status_code}")
@@ -864,7 +876,8 @@ class ArchiveScreen(Screen):
                     json_dump(data, f)
                 return data
             else:
-                logger.error(f"API error {response.status_code}: {response.text[:200]}")
+                logger.error(
+                    f"API error {response.status_code}: {response.text[:200]}")
                 return []
 
         except Exception as e:
@@ -986,9 +999,10 @@ class ArchiveScreen(Screen):
             translated_explanation = trans(explanation)
             self.session.open(
                 MessageBox,
-                "Title: {}\n\nExplanation:\n{}".format(translated_title, translated_explanation),
-                MessageBox.TYPE_INFO
-            )
+                "Title: {}\n\nExplanation:\n{}".format(
+                    translated_title,
+                    translated_explanation),
+                MessageBox.TYPE_INFO)
 
     def search_apod(self):
         self.session.openWithCallback(
@@ -1081,12 +1095,12 @@ class DetailScreen(Screen):
         self.active = True
         self["image"] = Pixmap()
         self["description"] = Label("")
-        
+
         # Translate title
         title_raw = self.data.get("title", "")
         self.translated_title = trans(title_raw) if title_raw else ""
         self["title"] = Label(self.translated_title)
-        
+
         # Translate date if it contains month names (e.g. "2026 April 18")
         date_raw = self.data.get("date", "")
         if date_raw and any(c.isalpha() for c in date_raw):
@@ -1119,23 +1133,27 @@ class DetailScreen(Screen):
                 logger.error("No date or page_url to fetch missing data")
                 self.onLayoutFinish.append(self.load_media)
                 return
-            
+
             # Parse date string to date object
             try:
                 if '-' in date_str:
-                    dt = datetime.datetime.strptime(date_str, "%Y-%m-%d").date()
+                    dt = datetime.datetime.strptime(
+                        date_str, "%Y-%m-%d").date()
                 else:
-                    dt = datetime.datetime.strptime(date_str, "%Y %B %d").date()
-            except:
+                    dt = datetime.datetime.strptime(
+                        date_str, "%Y %B %d").date()
+            except BaseException:
                 logger.error(f"Unable to parse date: {date_str}")
                 self.onLayoutFinish.append(self.load_media)
                 return
-            
-            full_data = parse_apod(dt, use_default_today_date=False, thumbs=False)
+
+            full_data = parse_apod(
+                dt, use_default_today_date=False, thumbs=False)
             if full_data:
                 self.data.update(full_data)
                 if 'explanation' in full_data:
-                    self.data['explanation_translated'] = trans(full_data['explanation'])
+                    self.data['explanation_translated'] = trans(
+                        full_data['explanation'])
                 logger.info(f"Fetched missing data for {date_str}")
             else:
                 # Fallback dummy data
@@ -1164,7 +1182,8 @@ class DetailScreen(Screen):
             url = self.data.get("hdurl") or self.data.get("url")
             self.show_animated_gif(url)
         else:
-            explanation = self.data.get("explanation_translated") or self.data.get("explanation", "")
+            explanation = self.data.get(
+                "explanation_translated") or self.data.get("explanation", "")
             if explanation and not self.data.get("explanation_translated"):
                 explanation = trans(explanation)
                 self.data['explanation_translated'] = explanation
@@ -1216,7 +1235,8 @@ class DetailScreen(Screen):
         if exists(path):
             try:
                 self["image"].instance.setPixmapFromFile(path)
-                explanation = self.data.get("explanation_translated") or self.data.get("explanation", "")
+                explanation = self.data.get(
+                    "explanation_translated") or self.data.get("explanation", "")
                 if explanation and not self.data.get("explanation_translated"):
                     explanation = trans(explanation)
                     self.data['explanation_translated'] = explanation
@@ -1253,13 +1273,19 @@ class DetailScreen(Screen):
         logger.info("Playing video: {}".format(url))
         m = search(r"(?:v=|youtu\.be/|embed/)([\w-]+)", url)
         if not m:
-            self.session.open(MessageBox, trans("Unsupported video URL"), MessageBox.TYPE_INFO)
+            self.session.open(
+                MessageBox,
+                trans("Unsupported video URL"),
+                MessageBox.TYPE_INFO)
             return
         vid = m.group(1)
         try:
             from youtube_dl import YoutubeDL
         except ImportError:
-            self.session.open(MessageBox, trans('Please install "YoutubeDL" plugin!'), MessageBox.TYPE_ERROR)
+            self.session.open(
+                MessageBox,
+                trans('Please install "YoutubeDL" plugin!'),
+                MessageBox.TYPE_ERROR)
             return
         try:
             yt_url = 'https://www.youtube.com/watch?v={}'.format(vid)
@@ -1273,7 +1299,10 @@ class DetailScreen(Screen):
             self.session.open(MoviePlayer, stream)
         except Exception as e:
             logger.error("Video playback error: {}".format(e))
-            self.session.open(MessageBox, trans("Video playback failed"), MessageBox.TYPE_INFO)
+            self.session.open(
+                MessageBox,
+                trans("Video playback failed"),
+                MessageBox.TYPE_INFO)
 
     def show_animated_gif(self, url):
         try:
@@ -1299,8 +1328,10 @@ class DetailScreen(Screen):
         self["image"].instance.setPixmap(self.picload.getData())
 
     def show_info(self):
-        title = self.translated_title or trans(self.data.get("title", "No Title"))
-        explanation = self.data.get("explanation_translated") or trans(self.data.get("explanation", "No Description"))
+        title = self.translated_title or trans(
+            self.data.get("title", "No Title"))
+        explanation = self.data.get("explanation_translated") or trans(
+            self.data.get("explanation", "No Description"))
         msg = "{}\n\n{}".format(title, explanation)
         self.session.open(MessageBox, msg, MessageBox.TYPE_INFO)
 
