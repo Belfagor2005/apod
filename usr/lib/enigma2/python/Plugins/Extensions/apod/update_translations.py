@@ -6,7 +6,7 @@ import subprocess
 from xml.etree import ElementTree as ET
 """
 ###########################################################
-apod for Enigma2
+Aglare for Enigma2
 Created by: Lululla
 ###########################################################
 Last Updated: 2026-01-31
@@ -16,10 +16,25 @@ Homepage: www.corvoboys.org
 ###########################################################
 """
 
-PLUGIN_NAME = "apod"
 PLUGIN_DIR = os.path.dirname(os.path.abspath(__file__))
+PLUGIN_NAME = os.path.basename(PLUGIN_DIR)
 LOCALE_DIR = os.path.join(PLUGIN_DIR, "res", "locale")
+
+def get_locale_dir(plugin_dir):
+    candidates = [
+        os.path.join(plugin_dir, "locale"),         # es. /plugin/locale
+        os.path.join(plugin_dir, "res", "locale")   # es. /plugin/res/locale
+    ]
+    for candidate in candidates:
+        if os.path.exists(candidate):
+            return candidate
+    # default: verrà creata successivamente
+    return os.path.join(plugin_dir, "locale")
+
+LOCALE_DIR = get_locale_dir(PLUGIN_DIR)
 POT_FILE = os.path.join(LOCALE_DIR, "{}.pot".format(PLUGIN_NAME))
+
+
 STANDARD_LANGUAGES = [
     'af',         # Afrikaans
     'am',         # Amharic
