@@ -585,10 +585,10 @@ def test_translation():
         print("=" * 60)
         stats = get_cache_stats()
         print(
-            f"Cache statistics: {
-                stats['hits']} hits, {
-                stats['misses']} misses, " f"rate: {
-                stats['hit_rate']:.1%}")
+            f"Cache statistics: {stats['hits']} hits, "
+            f"{stats['misses']} misses, "
+            f"rate: {stats['hit_rate']:.1%}"
+        )
         print("=" * 60)
 
     return all_passed

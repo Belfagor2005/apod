@@ -861,9 +861,9 @@ class ArchiveScreen(Screen):
                 params['start_date'] = start_date.strftime('%Y-%m-%d')
                 params['end_date'] = today.strftime('%Y-%m-%d')
                 logger.info(
-                    f"Fetching APODs from {
-                        params['start_date']} to {
-                        params['end_date']}")
+                    f"Fetching APODs from {params['start_date']} "
+                    f"to {params['end_date']}"
+                )
 
             response = requests.get(url, params=params, timeout=30)
             logger.info(f"Response status: {response.status_code}")
