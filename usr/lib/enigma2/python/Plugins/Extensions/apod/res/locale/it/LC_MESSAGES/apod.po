@@ -49,6 +49,9 @@ msgstr "Impossibile caricare APOD"
 msgid "Failed to load image."
 msgstr "Impossibile caricare l'immagine."
 
+msgid "Fetch mode:"
+msgstr ""
+
 msgid "Found"
 msgstr "Trovato"
 
@@ -87,6 +90,12 @@ msgstr "Numero di APOD da recuperare:"
 
 msgid "Press OK to play video"
 msgstr "Premere OK per riprodurre il video"
+
+msgid "Random"
+msgstr ""
+
+msgid "Recent (date range)"
+msgstr ""
 
 msgid "Save"
 msgstr "Salva"

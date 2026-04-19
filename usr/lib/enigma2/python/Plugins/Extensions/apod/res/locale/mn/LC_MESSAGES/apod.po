@@ -42,6 +42,9 @@ msgstr ""
 msgid "Failed to load image."
 msgstr ""
 
+msgid "Fetch mode:"
+msgstr ""
+
 msgid "Found"
 msgstr ""
 
@@ -79,6 +82,12 @@ msgid "Number of APODs to fetch:"
 msgstr ""
 
 msgid "Press OK to play video"
+msgstr ""
+
+msgid "Random"
+msgstr ""
+
+msgid "Recent (date range)"
 msgstr ""
 
 msgid "Save"

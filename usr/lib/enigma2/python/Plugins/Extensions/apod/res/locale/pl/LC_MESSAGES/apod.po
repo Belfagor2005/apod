@@ -57,6 +57,9 @@ msgstr "Nie udało się załadować obrazu."
 msgid "Failed to load image."
 msgstr "Nie udało się załadować obrazu."
 
+msgid "Fetch mode:"
+msgstr ""
+
 msgid "Found"
 msgstr ""
 
@@ -98,6 +101,12 @@ msgstr "Ilość APOD do pobrania:"
 
 msgid "Press OK to play video"
 msgstr "Wciśnij OK, aby odtworzyć wideo"
+
+msgid "Random"
+msgstr ""
+
+msgid "Recent (date range)"
+msgstr ""
 
 msgid "Save"
 msgstr "Zapisz"

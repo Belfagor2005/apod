@@ -57,6 +57,9 @@ msgstr "Bild kann nicht geladen werden."
 msgid "Failed to load image."
 msgstr "Bild kann nicht geladen werden."
 
+msgid "Fetch mode:"
+msgstr ""
+
 msgid "Found"
 msgstr ""
 
@@ -97,6 +100,12 @@ msgstr "Anzahl der abzurufenden APODs:"
 
 msgid "Press OK to play video"
 msgstr "Drücke OK, zum Video abspielen"
+
+msgid "Random"
+msgstr ""
+
+msgid "Recent (date range)"
+msgstr ""
 
 msgid "Save"
 msgstr "Speichern"
